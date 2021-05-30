@@ -61,9 +61,14 @@ class IntroSlider extends PureComponent {
     }
   };
 
-  hidePager = () => {
-    AsyncStorage.setItem('hidePager', 'true');
-    this.props.navigation.navigate('Auth');
+  goToLogin = () => {
+    this.props.navigation.navigate('OtpScreen', {
+      userData: {},
+    });
+  };
+
+  goToRegister = () => {
+    this.props.navigation.navigate('LoginScreen');
   };
 
   render() {
@@ -87,19 +92,18 @@ class IntroSlider extends PureComponent {
             />
 
             <ScrollView
-              style={{flex: 1, marginTop: 60}}
+              style={{flex: 1, paddingTop: 40}}
               horizontal={true}
               scrollEventThrottle={16}
               pagingEnabled={true}
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{paddingHorizontal: 12}}
               onScroll={(event) => {
                 this.setSliderPage(event);
               }}>
               <View style={{width, height}}>
                 <FastImage
                   source={{
-                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Environment-bro.png?alt=media&token=ac6377f4-d621-495a-9dbe-1e4f97019840',
+                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Environment-bro%20(2).png?alt=media&token=1a3ba314-d456-41b4-b61c-f3be1051ef9e',
                   }}
                   style={styles.imageStyle}
                 />
@@ -115,7 +119,7 @@ class IntroSlider extends PureComponent {
               <View style={{width, height}}>
                 <FastImage
                   source={{
-                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Nature-bro.png?alt=media&token=158e1833-08c3-4f09-ad04-c2465dce1044',
+                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Stay%20Positive-bro.png?alt=media&token=ba40e98b-b9da-44c6-841a-d517a21891f2',
                   }}
                   style={styles.imageStyle}
                 />
@@ -131,7 +135,7 @@ class IntroSlider extends PureComponent {
               <View style={{width, height}}>
                 <FastImage
                   source={{
-                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Environment-rafiki.png?alt=media&token=6f0cca77-90f2-4ff3-a6a0-3533dfab8216',
+                    uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Environment-rafiki%20(1).png?alt=media&token=0eccd7b7-0332-447c-b63e-431c6dcdb22f',
                   }}
                   style={styles.imageStyle}
                 />
@@ -145,6 +149,7 @@ class IntroSlider extends PureComponent {
                 </View>
               </View>
             </ScrollView>
+
             <View style={styles.bottomContainer}>
               <View style={styles.paginationWrapper}>
                 {Array.from(Array(3).keys()).map((key, index) => (
@@ -161,12 +166,26 @@ class IntroSlider extends PureComponent {
                 mode="contained"
                 style={{
                   borderRadius: 20,
-                  width: '60%',
-                  backgroundColor: '#007bff',
+                  width: '75%',
                   alignSelf: 'center',
+                  marginBottom: 12,
                 }}
-                onPress={this.hidePager}>
-                Get Started
+                labelStyle={{color: '#fff'}}
+                onPress={this.goToLogin}>
+                Login
+              </Button>
+              <Button
+                mode="outlined"
+                style={{
+                  borderRadius: 20,
+                  width: '75%',
+                  alignSelf: 'center',
+                  borderWidth: 0.6,
+                  borderColor: AgrxColors.primary,
+                }}
+                // labelStyle={{color: '#fff'}}
+                onPress={this.goToRegister}>
+                Register
               </Button>
             </View>
           </SafeAreaView>
@@ -225,15 +244,16 @@ const styles = StyleSheet.create({
     height: 10,
     width: 10,
     borderRadius: 10 / 2,
-    backgroundColor: '#007bff',
+    backgroundColor: AgrxColors.primary,
     marginLeft: 10,
     marginBottom: 30,
   },
   bottomContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 50,
     left: 0,
     right: 0,
+
     flexDirection: 'column',
     justifyContent: 'space-between',
   },

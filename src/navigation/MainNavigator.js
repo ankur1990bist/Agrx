@@ -141,6 +141,23 @@ function IntroSliderStack() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="OtpScreen"
+        component={OtpScreen}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
+      />
+      <Stack.Screen
+        name="RegisterScreen"
+        component={RegisterScreen}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 }
@@ -175,18 +192,18 @@ class MainNavigator extends React.Component {
 
           <Drawer.Navigator
             drawerType="front"
-            initialRouteName={'Auth'}
+            initialRouteName={'IntroSliderStack'}
             drawerContent={(props) => <DrawerContent {...props} />}>
             <Drawer.Screen
               name="IntroSliderStack"
               component={IntroSliderStack}
               options={{headerShown: false, swipeEnabled: false}}
             />
-            <Drawer.Screen
+            {/* <Drawer.Screen
               name="Auth"
               component={Auth}
               options={{headerShown: false, swipeEnabled: false}}
-            />
+            /> */}
           </Drawer.Navigator>
         </NavigationContainer>
       </PaperProvider>

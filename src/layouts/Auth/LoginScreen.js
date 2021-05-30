@@ -63,6 +63,7 @@ export class LoginScreen extends Component {
                   alignSelf: 'center',
                   marginTop: 16,
                   borderRadius: 5,
+                  backgroundColor: '#fff',
                 }}>
                 <TouchableOpacity
                   onPress={() => {
@@ -136,7 +137,7 @@ export class LoginScreen extends Component {
                   onChangeText={this.onChangeText}
                   style={{
                     width: '60%',
-                    backgroundColor: 'transparent',
+                    backgroundColor: '#fff',
                     alignSelf: 'center',
                     marginTop: 18,
                   }}
