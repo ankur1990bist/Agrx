@@ -217,8 +217,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 0 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who have less than 1 hectare of land
                     </Text>
@@ -255,8 +255,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 1 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 1 to 2 hectare of land
                     </Text>
@@ -302,8 +302,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 2 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 2 to 4 hectare of land
                     </Text>
@@ -340,8 +340,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 3 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 4 to 10 hectare of land
                     </Text>
@@ -387,8 +387,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 4 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 10 hectare or above of land
                     </Text>
@@ -425,8 +425,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmerCategory == 5 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers who does farming on others land
                     </Text>
@@ -629,8 +629,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmingPattern == 0 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Only one crop is grown on farm land year after year
                     </Text>
@@ -667,8 +667,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmingPattern == 1 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers grows two or more crops on farm land in one
                       calendar year
@@ -715,8 +715,8 @@ export class ProfileDetails extends Component {
                         fontSize: 14,
                         paddingHorizontal: 12,
                         paddingBottom: 8,
-                        color: this.state.farmingPattern == 2 ? '#fff' : '#000',
                         fontStyle: 'italic',
+                        color: AgrxColors.igesiaGray,
                       }}>
                       Farmers grows two or more crops simultaneously on the same
                       field in one calendar year
