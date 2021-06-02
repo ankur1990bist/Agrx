@@ -151,7 +151,7 @@ export class OtpScreen extends Component {
                         linkDefault={true}
                         linkStyle={{color: '#2980b9'}}>
                         <Text style={styles.errorLabel}>
-                          {this.state.errors.phoneNumber}{' '}
+                          {this.state.errors.phoneNumber}
                         </Text>
                       </Hyperlink>
                     );
@@ -188,7 +188,7 @@ export class OtpScreen extends Component {
                     mode="contained"
                     style={styles.buttonStyle}
                     onPress={() => {
-                      this.props.navigation.navigate('RegisterScreen');
+                      this.props.navigation.navigate('DocumentVerifiyScreen');
                     }}>
                     <Text
                       style={{
@@ -209,7 +209,7 @@ export class OtpScreen extends Component {
                         linkDefault={true}
                         linkStyle={{color: '#2980b9'}}>
                         <Text style={styles.errorLabel}>
-                          {this.state.errors.phoneNumber}{' '}
+                          {this.state.errors.phoneNumber}
                         </Text>
                       </Hyperlink>
                     );

@@ -37,7 +37,8 @@ import DrawerContent from '../layouts/DrawerContent';
 import IntroSlider from '../layouts/Auth/IntroSlider';
 import LoginScreen from '../layouts/Auth/LoginScreen';
 import OtpScreen from '../layouts/Auth/OtpScreen';
-
+import DocumentVerifiyScreen from '../layouts/Auth/DocumentVerifiyScreen';
+import ProfileDetails from '../layouts/Auth/ProfileDetails';
 import RegisterScreen from '../layouts/Auth/RegisterScreen';
 
 import AgrxColors from '../config/AgrxColors';
@@ -123,6 +124,11 @@ function Auth() {
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
+        name="DocumentVerifiyScreen"
+        component={DocumentVerifiyScreen}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
+      />
+      <Stack.Screen
         name="RegisterScreen"
         component={RegisterScreen}
         options={{headerShown: false}}
@@ -157,6 +163,16 @@ function IntroSliderStack() {
         name="RegisterScreen"
         component={RegisterScreen}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="DocumentVerifiyScreen"
+        component={DocumentVerifiyScreen}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
+      />
+      <Stack.Screen
+        name="ProfileDetails"
+        component={ProfileDetails}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
     </Stack.Navigator>
   );
