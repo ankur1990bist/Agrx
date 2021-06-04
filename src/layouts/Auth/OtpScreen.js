@@ -15,6 +15,9 @@ import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import PhoneInput from 'react-native-phone-number-input';
 import FastImage from 'react-native-fast-image';
+import {SEND_OTP, VERIFY_OTP} from '../../config/settings';
+import Spinner from '../../components/SpinnerOverlay';
+import Toast from 'react-native-simple-toast';
 export class OtpScreen extends Component {
   constructor(props) {
     super(props);
@@ -24,6 +27,7 @@ export class OtpScreen extends Component {
       errors: [],
       otpSent: false,
       otp: '',
+      isLoading: false,
     };
   }
 
@@ -46,19 +50,126 @@ export class OtpScreen extends Component {
     return true;
   };
 
+  onChangePhoneNumber = (text) => {
+    this.setState({
+      phoneNumber: text,
+      errors: [],
+    });
+  };
+
   onChangeOtp = (text) => {
     this.setState({
       otp: text,
+      errors: [],
     });
   };
+
+  sendOtp = () => {
+    const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    console.log(
+      regex.test(this.state.phoneNumber),
+      'regex.test(this.state.phoneNumber)',
+      this.state.phoneNumber,
+    );
+    if (this.state.phoneNumber.length < 10) {
+      let errors = this.state.errors;
+      errors['globalError'] = 'Please enter phone number';
+      this.setState({
+        errors: errors,
+      });
+      return;
+    }
+
+    if (regex.test(this.state.phoneNumber) == false) {
+      let errors = this.state.errors;
+      errors['globalError'] = 'Please enter valid phone number';
+      this.setState({
+        errors: errors,
+      });
+      return;
+    }
+
+    this.setState({
+      isLoading: true,
+    });
+    fetch(SEND_OTP + this.state.phoneNumber, {
+      method: 'GET',
+    }).then((response) => {
+      console.log(response, 'response', response.ok);
+      if (response.ok) {
+        console.log('success');
+        Toast.show('OTP sent successfully!', Toast.LONG);
+        this.setState({
+          isLoading: false,
+          otpSent: true,
+        });
+      } else {
+        console.log('errro');
+        this.setState({
+          isLoading: false,
+          otpSent: false,
+        });
+      }
+    });
+  };
+
+  verifyOtp = () => {
+    if (this.state.otp.length <= 1) {
+      let errors = this.state.errors;
+      errors['globalError'] = 'Please enter OTP';
+      this.setState({
+        errors: errors,
+      });
+      return;
+    }
+
+    this.setState({
+      isLoading: true,
+    });
+
+    fetch(VERIFY_OTP + this.state.otp, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => {
+      console.log(response, 'response');
+      if (response.ok) {
+        this.setState({
+          isLoading: false,
+        });
+        this.props.navigation.navigate('DocumentVerifiyScreen');
+      } else {
+        this.setState({
+          isLoading: false,
+        });
+        let errors = this.state.errors;
+        errors['globalError'] = 'Invalid OTP';
+        this.setState({
+          errors: errors,
+        });
+      }
+    });
+  };
+
+  editPhone = () => {
+    this.setState({
+      otpSent: false,
+      otp: '',
+    });
+  };
+
   render() {
     const {isDark} = this.props.agrxTheme;
     const {name} = this.props.route.params.userData;
+    const {isLoading, phoneNumber, otp, errors} = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
+        <Spinner visible={isLoading} />
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps={'always'}
-          contentContainerStyle={{flex: 1}}>
+          contentContainerStyle={{flexGrow: 1}}>
           <View style={{marginHorizontal: 12, marginTop: 20}}>
             <FastImage
               style={{
@@ -86,11 +197,12 @@ export class OtpScreen extends Component {
                   <Text style={styles.subheadingText}>
                     To verify we will send an OTP to your number
                   </Text>
+
                   <PhoneInput
                     ref={(ref) => {
                       this.phoneNumberField = ref;
                     }}
-                    value={this.state.phoneNumber}
+                    value={phoneNumber}
                     onChangeText={this.onChangePhoneNumber}
                     onChangeCountry={this.onChangeCountry}
                     placeholder={'Phone number*'}
@@ -124,14 +236,19 @@ export class OtpScreen extends Component {
                     withDarkTheme={isDark}
                   />
 
+                  {(() => {
+                    if (errors.globalError)
+                      return (
+                        <Text style={styles.errorLabel}>
+                          {errors.globalError}{' '}
+                        </Text>
+                      );
+                  })()}
+
                   <Button
                     mode="contained"
                     style={styles.buttonStyle}
-                    onPress={() => {
-                      this.setState({
-                        otpSent: true,
-                      });
-                    }}>
+                    onPress={this.sendOtp}>
                     <Text
                       style={{
                         fontSize: 18,
@@ -143,19 +260,6 @@ export class OtpScreen extends Component {
                     </Text>
                   </Button>
                 </View>
-
-                {(() => {
-                  if (this.state.errors.phoneNumber)
-                    return (
-                      <Hyperlink
-                        linkDefault={true}
-                        linkStyle={{color: '#2980b9'}}>
-                        <Text style={styles.errorLabel}>
-                          {this.state.errors.phoneNumber}
-                        </Text>
-                      </Hyperlink>
-                    );
-                })()}
               </View>
             ) : (
               <View>
@@ -165,14 +269,14 @@ export class OtpScreen extends Component {
                     Verify you number
                   </Text>
                   <Text style={styles.subheadingText}>
-                    Enter verification code sent to {this.state.phoneNumber}
+                    Enter verification code sent to {phoneNumber}
                   </Text>
                   <TextInput
                     mode="outlined"
                     // label="Enter otp"
                     keyboardType="number-pad"
-                    placeholder="Enter your otp"
-                    value={this.state.otp}
+                    placeholder="Enter OTP"
+                    value={otp}
                     onChangeText={this.onChangeOtp}
                     style={{
                       width: '100%',
@@ -183,13 +287,18 @@ export class OtpScreen extends Component {
                     underlineColor="transparent"
                     underlineColorAndroid="transparent"
                   />
-
+                  {(() => {
+                    if (errors.globalError)
+                      return (
+                        <Text style={styles.errorLabel}>
+                          {errors.globalError}{' '}
+                        </Text>
+                      );
+                  })()}
                   <Button
                     mode="contained"
                     style={styles.buttonStyle}
-                    onPress={() => {
-                      this.props.navigation.navigate('DocumentVerifiyScreen');
-                    }}>
+                    onPress={this.verifyOtp}>
                     <Text
                       style={{
                         fontSize: 18,
@@ -201,19 +310,28 @@ export class OtpScreen extends Component {
                     </Text>
                   </Button>
                 </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                  <TouchableOpacity
+                    onPress={this.editPhone}
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{color: AgrxColors.igesiaGray, fontSize: 16}}>
+                      Edit phone number?
+                    </Text>
+                  </TouchableOpacity>
 
-                {(() => {
-                  if (this.state.errors.phoneNumber)
-                    return (
-                      <Hyperlink
-                        linkDefault={true}
-                        linkStyle={{color: '#2980b9'}}>
-                        <Text style={styles.errorLabel}>
-                          {this.state.errors.phoneNumber}
-                        </Text>
-                      </Hyperlink>
-                    );
-                })()}
+                  <TouchableOpacity
+                    onPress={this.sendOtp}
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <Text style={{color: AgrxColors.primary, fontSize: 16}}>
+                      Resend OTP
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
           </View>
