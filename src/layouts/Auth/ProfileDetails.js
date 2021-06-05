@@ -218,7 +218,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 0
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who have less than 1 hectare of land
                     </Text>
@@ -256,7 +259,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 1
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 1 to 2 hectare of land
                     </Text>
@@ -303,7 +309,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 2
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 2 to 4 hectare of land
                     </Text>
@@ -341,7 +350,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 3
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 4 to 10 hectare of land
                     </Text>
@@ -388,7 +400,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 4
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who have 10 hectare or above of land
                     </Text>
@@ -426,7 +441,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmerCategory == 5
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers who does farming on others land
                     </Text>
@@ -630,7 +648,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmingPattern == 0
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Only one crop is grown on farm land year after year
                     </Text>
@@ -668,7 +689,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmingPattern == 1
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers grows two or more crops on farm land in one
                       calendar year
@@ -716,7 +740,10 @@ export class ProfileDetails extends Component {
                         paddingHorizontal: 12,
                         paddingBottom: 8,
                         fontStyle: 'italic',
-                        color: AgrxColors.igesiaGray,
+                        color:
+                          this.state.farmingPattern == 2
+                            ? '#fff'
+                            : AgrxColors.igesiaGray,
                       }}>
                       Farmers grows two or more crops simultaneously on the same
                       field in one calendar year
@@ -770,7 +797,7 @@ export class ProfileDetails extends Component {
                         color:
                           this.state.waterAvailableType == 0 ? '#fff' : '#000',
                       }}>
-                      Farmer
+                      Rainfed water
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -800,7 +827,7 @@ export class ProfileDetails extends Component {
                         color:
                           this.state.waterAvailableType == 1 ? '#fff' : '#000',
                       }}>
-                      Non farmer
+                      Irrigated Farming
                     </Text>
                   </TouchableOpacity>
                 </View>

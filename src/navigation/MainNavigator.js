@@ -131,7 +131,7 @@ function Auth() {
       <Stack.Screen
         name="RegisterScreen"
         component={RegisterScreen}
-        options={{headerShown: false}}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
     </Stack.Navigator>
   );
@@ -162,7 +162,7 @@ function IntroSliderStack() {
       <Stack.Screen
         name="RegisterScreen"
         component={RegisterScreen}
-        options={{headerShown: false}}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
         name="DocumentVerifiyScreen"

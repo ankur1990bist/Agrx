@@ -64,11 +64,14 @@ class IntroSlider extends PureComponent {
   goToLogin = () => {
     this.props.navigation.navigate('OtpScreen', {
       userData: {},
+      isLogin: true,
     });
   };
 
   goToRegister = () => {
-    this.props.navigation.navigate('LoginScreen');
+    this.props.navigation.navigate('LoginScreen', {
+      userData: {},
+    });
   };
 
   render() {

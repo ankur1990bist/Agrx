@@ -147,7 +147,7 @@ export class LoginScreen extends Component {
               </Animatable.View>
             )}
             {this.state.name.length > 0 && (
-              <Animatable.View animation="slideInRight" useNativeDriver={true}>
+              <Animatable.View animation="zoomIn" useNativeDriver={true}>
                 <Button
                   mode="contained"
                   style={{
@@ -158,11 +158,12 @@ export class LoginScreen extends Component {
                   }}
                   labelStyle={{color: '#fff'}}
                   onPress={() => {
-                    this.props.navigation.navigate('OtpScreen', {
+                    this.props.navigation.navigate('RegisterScreen', {
                       userData: {
                         name: this.state.name,
                         gender: this.state.gender,
                       },
+                      isLogin: false,
                     });
                   }}>
                   Proceed

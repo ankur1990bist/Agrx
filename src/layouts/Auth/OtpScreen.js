@@ -18,6 +18,8 @@ import FastImage from 'react-native-fast-image';
 import {SEND_OTP, VERIFY_OTP} from '../../config/settings';
 import Spinner from '../../components/SpinnerOverlay';
 import Toast from 'react-native-simple-toast';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 export class OtpScreen extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +30,11 @@ export class OtpScreen extends Component {
       otpSent: false,
       otp: '',
       isLoading: false,
+      showPass: false,
+      password: '',
+      confirmPassword: '',
+      showPassConfirm: false,
+      setPassword: false,
     };
   }
 
@@ -60,6 +67,20 @@ export class OtpScreen extends Component {
   onChangeOtp = (text) => {
     this.setState({
       otp: text,
+      errors: [],
+    });
+  };
+
+  onChangePassword = (text) => {
+    this.setState({
+      password: text,
+      errors: [],
+    });
+  };
+
+  onChangePasswordConfirm = (text) => {
+    this.setState({
+      confirmPassword: text,
       errors: [],
     });
   };
@@ -105,9 +126,13 @@ export class OtpScreen extends Component {
         });
       } else {
         console.log('errro');
+        let errors = this.state.errors;
+        errors['phoneError'] = 'Some error occured.';
+
         this.setState({
           isLoading: false,
           otpSent: false,
+          errors: errors,
         });
       }
     });
@@ -138,19 +163,22 @@ export class OtpScreen extends Component {
       if (response.ok) {
         this.setState({
           isLoading: false,
+          setPassword: this.props.route.params.isLoading ? false : true,
         });
-        this.props.navigation.navigate('DocumentVerifiyScreen');
+        this.loginUser();
       } else {
-        this.setState({
-          isLoading: false,
-        });
         let errors = this.state.errors;
         errors['globalError'] = 'Invalid OTP';
         this.setState({
+          isLoading: false,
           errors: errors,
         });
       }
     });
+  };
+
+  loginUser = () => {
+    this.props.navigation.navigate('DocumentVerifiyScreen');
   };
 
   editPhone = () => {
@@ -163,7 +191,16 @@ export class OtpScreen extends Component {
   render() {
     const {isDark} = this.props.agrxTheme;
     const {name} = this.props.route.params.userData;
-    const {isLoading, phoneNumber, otp, errors} = this.state;
+    const {isLogin} = this.props.route.params;
+    const {
+      isLoading,
+      phoneNumber,
+      otp,
+      errors,
+      password,
+      setPassword,
+      confirmPassword,
+    } = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
         <Spinner visible={isLoading} />
@@ -173,20 +210,17 @@ export class OtpScreen extends Component {
           <View style={{marginHorizontal: 12, marginTop: 20}}>
             <FastImage
               style={{
-                height: PixelRatio.getPixelSizeForLayoutSize(70),
-                width: '80%',
+                height: isLogin
+                  ? PixelRatio.getPixelSizeForLayoutSize(50)
+                  : PixelRatio.getPixelSizeForLayoutSize(70),
+                width: isLogin ? '60%' : '80%',
                 alignSelf: 'center',
               }}
               source={{
                 uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Forgot%20password-rafiki%20(1).png?alt=media&token=68494fe2-3b81-47a8-81a2-1bfeda443bf1',
               }}
             />
-            {name && (
-              <Text
-                style={{fontSize: 32, color: '#009688', fontWeight: 'bold'}}>
-                Alright {name},
-              </Text>
-            )}
+
             {this.state.otpSent == false ? (
               <View>
                 <View>
@@ -194,9 +228,11 @@ export class OtpScreen extends Component {
                     style={isDark ? styles.updateTextDark : styles.updateText}>
                     Enter your contact number
                   </Text>
-                  <Text style={styles.subheadingText}>
-                    To verify we will send an OTP to your number
-                  </Text>
+                  {!isLogin && (
+                    <Text style={styles.subheadingText}>
+                      To verify we will send an OTP to your number
+                    </Text>
+                  )}
 
                   <PhoneInput
                     ref={(ref) => {
@@ -235,28 +271,97 @@ export class OtpScreen extends Component {
                     }}
                     withDarkTheme={isDark}
                   />
-
                   {(() => {
-                    if (errors.globalError)
+                    if (errors.phoneError)
                       return (
                         <Text style={styles.errorLabel}>
-                          {errors.globalError}{' '}
+                          {errors.phoneError}{' '}
                         </Text>
                       );
                   })()}
+                  {isLogin && (
+                    <View>
+                      <TextInput
+                        mode="flat"
+                        // label="Enter otp"
+                        placeholder="Enter Password"
+                        value={password}
+                        onChangeText={this.onChangePassword}
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#fff',
+                          alignSelf: 'center',
+                          marginTop: 8,
+                        }}
+                        secureTextEntry={this.state.showPass ? false : true}
+                        underlineColor="transparent"
+                        underlineColorAndroid="transparent"
+                        right={
+                          <TextInput.Icon
+                            onPress={() => {
+                              this.setState({
+                                showPass: !this.state.showPass,
+                              });
+                            }}
+                            name={() => (
+                              <Ionicons
+                                name={this.state.showPass ? 'eye' : 'eye-off'}
+                                size={25}
+                                color={AgrxColors.igesiaGray}
+                              />
+                            )}
+                          />
+                        }
+                      />
+                      {(() => {
+                        if (errors.passwordError)
+                          return (
+                            <Text style={styles.errorLabel}>
+                              {errors.passwordError}{' '}
+                            </Text>
+                          );
+                      })()}
+                      <Button
+                        mode="contained"
+                        style={styles.buttonStyle}
+                        onPress={this.loginUser}>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            color: '#fff',
+                            textTransform: 'none',
+                            fontWeight: '500',
+                          }}>
+                          Login
+                        </Text>
+                      </Button>
+
+                      <Text
+                        style={{
+                          fontSize: 22,
+                          color: AgrxColors.igesiaGray,
+                          textAlign: 'center',
+                        }}>
+                        OR
+                      </Text>
+                    </View>
+                  )}
 
                   <Button
                     mode="contained"
-                    style={styles.buttonStyle}
+                    style={[
+                      styles.buttonStyle,
+                      isLogin && {backgroundColor: '#fff'},
+                    ]}
                     onPress={this.sendOtp}>
                     <Text
                       style={{
                         fontSize: 18,
-                        color: '#fff',
+                        color: isLogin ? AgrxColors.primary : '#fff',
                         textTransform: 'none',
                         fontWeight: '500',
                       }}>
-                      Submit
+                      Request OTP
                     </Text>
                   </Button>
                 </View>
@@ -318,7 +423,10 @@ export class OtpScreen extends Component {
                   }}>
                   <TouchableOpacity
                     onPress={this.editPhone}
-                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
                     <Text style={{color: AgrxColors.igesiaGray, fontSize: 16}}>
                       Edit phone number?
                     </Text>
@@ -326,7 +434,10 @@ export class OtpScreen extends Component {
 
                   <TouchableOpacity
                     onPress={this.sendOtp}
-                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
                     <Text style={{color: AgrxColors.primary, fontSize: 16}}>
                       Resend OTP
                     </Text>
