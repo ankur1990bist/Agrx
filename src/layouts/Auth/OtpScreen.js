@@ -152,12 +152,20 @@ export class OtpScreen extends Component {
       isLoading: true,
     });
 
+    const body = {
+      mobileNo: this.state.phoneNumber,
+      otp: this.state.otp,
+    };
+
+    console.log(body, 'body');
+
     fetch(VERIFY_OTP + this.state.otp, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(),
     }).then((response) => {
       console.log(response, 'response');
       if (response.ok) {

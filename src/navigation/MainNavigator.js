@@ -40,6 +40,7 @@ import OtpScreen from '../layouts/Auth/OtpScreen';
 import DocumentVerifiyScreen from '../layouts/Auth/DocumentVerifiyScreen';
 import ProfileDetails from '../layouts/Auth/ProfileDetails';
 import RegisterScreen from '../layouts/Auth/RegisterScreen';
+import Dashboard from '../layouts/Dashboard';
 
 import AgrxColors from '../config/AgrxColors';
 
@@ -172,6 +173,11 @@ function IntroSliderStack() {
       <Stack.Screen
         name="ProfileDetails"
         component={ProfileDetails}
+        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
+      />
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
     </Stack.Navigator>

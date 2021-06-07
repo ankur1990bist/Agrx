@@ -15,7 +15,7 @@ import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import PhoneInput from 'react-native-phone-number-input';
 import FastImage from 'react-native-fast-image';
-import {SEND_OTP, VERIFY_OTP} from '../../config/settings';
+import {SAVE_USER_DATA, SEND_OTP, VERIFY_OTP} from '../../config/settings';
 import Spinner from '../../components/SpinnerOverlay';
 import Toast from 'react-native-simple-toast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -81,6 +81,11 @@ export class RegisterScreen extends Component {
   };
 
   sendOtp = () => {
+    this.setState({
+      isLoading: false,
+      otpSent: true,
+    });
+    return;
     const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     console.log(
       regex.test(this.state.phoneNumber),
@@ -134,6 +139,11 @@ export class RegisterScreen extends Component {
   };
 
   verifyOtp = () => {
+    this.setState({
+      isLoading: false,
+      setPassword: true,
+    });
+    return;
     if (this.state.otp.length <= 1) {
       let errors = this.state.errors;
       errors['globalError'] = 'Please enter OTP';
@@ -147,18 +157,26 @@ export class RegisterScreen extends Component {
       isLoading: true,
     });
 
+    const body = {
+      mobileNo: this.state.phoneNumber,
+      otp: this.state.otp,
+    };
+
+    console.log(body, 'body');
+
     fetch(VERIFY_OTP + this.state.otp, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(),
     }).then((response) => {
       console.log(response, 'response');
       if (response.ok) {
         this.setState({
           isLoading: false,
-          setPassword: this.props.route.params.isLoading ? false : true,
+          setPassword: true,
         });
       } else {
         let errors = this.state.errors;
@@ -173,6 +191,64 @@ export class RegisterScreen extends Component {
 
   createAccount = () => {
     this.props.navigation.navigate('DocumentVerifiyScreen');
+    return;
+    if (this.state.password.length <= 6) {
+      let errors = this.state.errors;
+      errors['globalError'] = 'Password should be of atleast 6 characters.';
+      this.setState({
+        errors: errors,
+      });
+      return;
+    }
+
+    if (this.state.password !== this.state.confirmPassword) {
+      let errors = this.state.errors;
+      errors['globalError'] = `Password didn't match`;
+      this.setState({
+        errors: errors,
+      });
+      return;
+    }
+
+    this.setState({
+      isLoading: true,
+    });
+
+    const body = {
+      mobileNo: this.state.phoneNumber,
+      password: this.state.password,
+    };
+
+    console.log(body, 'body');
+
+    fetch(SAVE_USER_DATA + this.state.otp, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(),
+    }).then((response) => {
+      console.log(response, 'response');
+      if (response.ok) {
+        this.setState({
+          isLoading: false,
+          setPassword: this.props.route.params.isLoading ? false : true,
+        });
+        this.loginUser();
+      } else {
+        let errors = this.state.errors;
+        errors['globalError'] = 'Invalid OTP';
+        this.setState({
+          isLoading: false,
+          errors: errors,
+        });
+      }
+    });
+  };
+
+  loginUser = () => {
+    this.props.navigation.navigate('DocumentVerifiyScreen');
   };
 
   editPhone = () => {
@@ -185,7 +261,6 @@ export class RegisterScreen extends Component {
   render() {
     const {isDark} = this.props.agrxTheme;
     const {name} = this.props.route.params.userData;
-    const {isLogin} = this.props.route.params;
     const {
       isLoading,
       phoneNumber,
@@ -204,10 +279,8 @@ export class RegisterScreen extends Component {
           <View style={{marginHorizontal: 12, marginTop: 20}}>
             <FastImage
               style={{
-                height: isLogin
-                  ? PixelRatio.getPixelSizeForLayoutSize(50)
-                  : PixelRatio.getPixelSizeForLayoutSize(70),
-                width: isLogin ? '60%' : '80%',
+                height: PixelRatio.getPixelSizeForLayoutSize(70),
+                width: '80%',
                 alignSelf: 'center',
               }}
               source={{
@@ -227,11 +300,10 @@ export class RegisterScreen extends Component {
                     style={isDark ? styles.updateTextDark : styles.updateText}>
                     Enter your contact number
                   </Text>
-                  {!isLogin && (
-                    <Text style={styles.subheadingText}>
-                      To verify we will send an OTP to your number
-                    </Text>
-                  )}
+
+                  <Text style={styles.subheadingText}>
+                    To verify we will send an OTP to your number
+                  </Text>
 
                   <PhoneInput
                     ref={(ref) => {
@@ -271,66 +343,6 @@ export class RegisterScreen extends Component {
                     withDarkTheme={isDark}
                   />
 
-                  {isLogin && (
-                    <View>
-                      <TextInput
-                        mode="flat"
-                        // label="Enter otp"
-                        placeholder="Enter Password"
-                        value={password}
-                        onChangeText={this.onChangePassword}
-                        style={{
-                          width: '100%',
-                          backgroundColor: '#fff',
-                          alignSelf: 'center',
-                          marginTop: 8,
-                        }}
-                        secureTextEntry={this.state.showPass ? false : true}
-                        underlineColor="transparent"
-                        underlineColorAndroid="transparent"
-                        right={
-                          <TextInput.Icon
-                            onPress={() => {
-                              this.setState({
-                                showPass: !this.state.showPass,
-                              });
-                            }}
-                            name={() => (
-                              <Ionicons
-                                name={this.state.showPass ? 'eye' : 'eye-off'}
-                                size={25}
-                                color={AgrxColors.igesiaGray}
-                              />
-                            )}
-                          />
-                        }
-                      />
-                      <Button
-                        mode="contained"
-                        style={styles.buttonStyle}
-                        onPress={this.loginUser}>
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            color: '#fff',
-                            textTransform: 'none',
-                            fontWeight: '500',
-                          }}>
-                          Login
-                        </Text>
-                      </Button>
-
-                      <Text
-                        style={{
-                          fontSize: 22,
-                          color: AgrxColors.igesiaGray,
-                          textAlign: 'center',
-                        }}>
-                        OR
-                      </Text>
-                    </View>
-                  )}
-
                   {(() => {
                     if (errors.globalError)
                       return (
@@ -342,15 +354,12 @@ export class RegisterScreen extends Component {
 
                   <Button
                     mode="contained"
-                    style={[
-                      styles.buttonStyle,
-                      isLogin && {backgroundColor: '#fff'},
-                    ]}
+                    style={[styles.buttonStyle]}
                     onPress={this.sendOtp}>
                     <Text
                       style={{
                         fontSize: 18,
-                        color: isLogin ? AgrxColors.primary : '#fff',
+                        color: '#fff',
                         textTransform: 'none',
                         fontWeight: '500',
                       }}>

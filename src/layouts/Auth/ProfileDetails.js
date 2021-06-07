@@ -845,7 +845,9 @@ export class ProfileDetails extends Component {
                   marginBottom: 40,
                 }}
                 labelStyle={{color: '#fff'}}
-                onPress={() => {}}>
+                onPress={() => {
+                  this.props.navigation.navigate('Dashboard');
+                }}>
                 Submit
               </Button>
             </Animatable.View>

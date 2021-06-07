@@ -15,6 +15,10 @@ import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import ImagePicker from 'react-native-image-picker';
+import Toast from 'react-native-simple-toast';
+
 export class DocumentVerifiyScreen extends Component {
   constructor(props) {
     super(props);
@@ -37,8 +41,51 @@ export class DocumentVerifiyScreen extends Component {
       progress: 0,
       showFinalDetails: false,
       tncAccepted: false,
+      pressed: false,
     };
   }
+
+  imageTapped = () => {
+    this.setState({
+      pressed: true,
+    });
+    const options = {
+      quality: 1.0,
+      maxWidth: 300,
+      maxHeight: 300,
+      storageOptions: {
+        skipBackup: true,
+        cameraRoll: true,
+      },
+      allowsEditing: true,
+      mediaType: 'photo',
+    };
+
+    ImagePicker.showImagePicker(options, async (response) => {
+      if (response.didCancel) {
+        console.log(response.didCancel, 'response.didCancel');
+        this.setState({
+          pressed: false,
+        });
+      } else if (response.error) {
+        console.log(response.error, 'response.error');
+        this.setState({
+          pressed: false,
+        });
+      } else if (response.customButton) {
+        console.log(response.customButton, 'response.customButton');
+        this.setState({
+          pressed: false,
+        });
+      } else {
+        this.setState({
+          pressed: false,
+          selectedImage: response,
+        });
+        console.log(response, 'response image');
+      }
+    });
+  };
 
   render() {
     const {isDark} = this.props.agrxTheme;
@@ -67,11 +114,7 @@ export class DocumentVerifiyScreen extends Component {
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={() => {
-                  this.setState({
-                    selectedImage: true,
-                  });
-                }}>
+                onPress={this.imageTapped}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -85,11 +128,7 @@ export class DocumentVerifiyScreen extends Component {
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={() => {
-                  this.setState({
-                    selectedImage: true,
-                  });
-                }}>
+                onPress={this.imageTapped}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -103,11 +142,7 @@ export class DocumentVerifiyScreen extends Component {
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={() => {
-                  this.setState({
-                    selectedImage: true,
-                  });
-                }}>
+                onPress={this.imageTapped}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -135,7 +170,7 @@ export class DocumentVerifiyScreen extends Component {
                   borderWidth: 0.3,
                   borderColor: AgrxColors.igesiaGray,
                 }}>
-                {!this.state.selectedImage ? (
+                {!this.state.selectedImage?.uri ? (
                   <View
                     style={{
                       padding: 12,
@@ -160,12 +195,14 @@ export class DocumentVerifiyScreen extends Component {
                   <View>
                     <FastImage
                       source={{
-                        uri: 'https://firebasestorage.googleapis.com/v0/b/empo-e0524.appspot.com/o/Environment-rafiki%20(1).png?alt=media&token=0eccd7b7-0332-447c-b63e-431c6dcdb22f',
+                        uri: this.state.selectedImage.uri,
                       }}
                       style={{
-                        height: 180,
+                        marginTop: 8,
+                        height: 200,
                         width: '100%',
                         alignSelf: 'center',
+                        borderRadius: 5,
                       }}
                       resizeMode={'contain'}
                     />
@@ -175,6 +212,7 @@ export class DocumentVerifiyScreen extends Component {
                         alignItems: 'center',
                         justifyContent: 'space-evenly',
                         paddingBottom: 16,
+                        marginTop: 12,
                       }}>
                       <TouchableOpacity
                         onPress={() => {
@@ -651,6 +689,10 @@ export class DocumentVerifiyScreen extends Component {
                 mode="contained"
                 style={[styles.buttonStyle, {width: '90%', marginTop: 16}]}
                 onPress={() => {
+                  if (this.state.tncAccepted == false) {
+                    Toast.show('Please accept terms and conditions first.');
+                    return;
+                  }
                   this.setState(
                     {
                       progress: 1,
