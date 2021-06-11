@@ -81,11 +81,6 @@ export class RegisterScreen extends Component {
   };
 
   sendOtp = () => {
-    this.setState({
-      isLoading: false,
-      otpSent: true,
-    });
-    return;
     const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     console.log(
       regex.test(this.state.phoneNumber),
@@ -139,11 +134,6 @@ export class RegisterScreen extends Component {
   };
 
   verifyOtp = () => {
-    this.setState({
-      isLoading: false,
-      setPassword: true,
-    });
-    return;
     if (this.state.otp.length <= 1) {
       let errors = this.state.errors;
       errors['globalError'] = 'Please enter OTP';
@@ -164,13 +154,13 @@ export class RegisterScreen extends Component {
 
     console.log(body, 'body');
 
-    fetch(VERIFY_OTP + this.state.otp, {
-      method: 'GET',
+    fetch(VERIFY_OTP, {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(),
+      body: JSON.stringify(body),
     }).then((response) => {
       console.log(response, 'response');
       if (response.ok) {
@@ -190,8 +180,6 @@ export class RegisterScreen extends Component {
   };
 
   createAccount = () => {
-    this.props.navigation.navigate('DocumentVerifiyScreen');
-    return;
     if (this.state.password.length <= 6) {
       let errors = this.state.errors;
       errors['globalError'] = 'Password should be of atleast 6 characters.';
@@ -221,13 +209,13 @@ export class RegisterScreen extends Component {
 
     console.log(body, 'body');
 
-    fetch(SAVE_USER_DATA + this.state.otp, {
+    fetch(SAVE_USER_DATA, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(),
+      body: JSON.stringify(body),
     }).then((response) => {
       console.log(response, 'response');
       if (response.ok) {

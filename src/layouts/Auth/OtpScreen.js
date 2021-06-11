@@ -160,7 +160,7 @@ export class OtpScreen extends Component {
     console.log(body, 'body');
 
     fetch(VERIFY_OTP + this.state.otp, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

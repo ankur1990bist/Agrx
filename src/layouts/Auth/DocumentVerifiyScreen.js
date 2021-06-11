@@ -15,9 +15,10 @@ import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {UPLOAD_IMAGE} from '../../config/settings';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export class DocumentVerifiyScreen extends Component {
   constructor(props) {
@@ -29,23 +30,18 @@ export class DocumentVerifiyScreen extends Component {
       documentData: {
         idType: 'Passport',
         idNumber: '1212',
-        placeOfIssue: 'Delhi',
-        issuingAuthority: 'Ministry of public affairs',
-        dateOfIssue: '24/07/2020',
-        expiryDate: '24/07/2030',
         name: 'John anderson',
         dateOfBirth: '01/01/1995',
-        address: 'India',
-        gender: 'Male',
       },
       progress: 0,
       showFinalDetails: false,
       tncAccepted: false,
       pressed: false,
+      uploadProgress: '',
     };
   }
 
-  imageTapped = () => {
+  imageTapped = (docType) => {
     this.setState({
       pressed: true,
     });
@@ -81,10 +77,75 @@ export class DocumentVerifiyScreen extends Component {
         this.setState({
           pressed: false,
           selectedImage: response,
+          documentData: {
+            ...this.state.documentData,
+            idType: docType,
+          },
         });
         console.log(response, 'response image');
       }
     });
+  };
+
+  uploadImage = () => {
+    const {selectedImage} = this.state;
+    let body = [
+      {
+        name: 'file',
+        filename: `IMG_${Date.now()}`,
+        data:
+          Platform.OS == 'android'
+            ? RNFetchBlob.wrap(selectedImage.uri)
+            : RNFetchBlob.wrap(selectedImage.uri.replace('file://', '')),
+      },
+    ];
+
+    console.log(body, 'body');
+    this.setState({
+      isLoading: true,
+    });
+
+    RNFetchBlob.fetch(
+      'POST',
+      UPLOAD_IMAGE,
+      {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      body,
+    )
+      .uploadProgress((written, total) => {
+        console.log('uploaded', written / total);
+        this.setState({
+          uploadProgress: (written / total).toFixed(2) * 100,
+        });
+      })
+      .then((resp) => {
+        console.log('resp', resp);
+        if (resp.data) {
+          let docData = JSON.parse(resp.data);
+          console.log(docData, 'docData');
+          this.setState({
+            imageSubmitted: true,
+            progress: 0.33,
+            documentData: {
+              ...this.state.documentData,
+              idNumber: docData?.result?.documentNumber,
+              name:
+                docData?.result?.fullName.length > 0
+                  ? docData?.result?.fullName
+                  : docData?.result?.firstName + docData?.result?.lastName,
+              dateOfBirth: `${docData?.result?.dateOfBirth?.day}/${docData?.result?.dateOfBirth?.month}/${docData?.result?.dateOfBirth?.year}`,
+            },
+          });
+        }
+      })
+      .catch((err) => {
+        console.log('err', err);
+        this.setState({
+          isLoading: false,
+        });
+      });
   };
 
   render() {
@@ -111,10 +172,11 @@ export class DocumentVerifiyScreen extends Component {
                 Which of these document would you like to use for the
                 verification?
               </Text>
+
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={this.imageTapped}>
+                onPress={() => this.imageTapped('PAN CARD')}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -128,7 +190,7 @@ export class DocumentVerifiyScreen extends Component {
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={this.imageTapped}>
+                onPress={() => this.imageTapped('AADHAR CARD')}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -142,7 +204,7 @@ export class DocumentVerifiyScreen extends Component {
               <Button
                 mode="contained"
                 style={styles.buttonStyle}
-                onPress={this.imageTapped}>
+                onPress={() => this.imageTapped('PASSPORT')}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -153,6 +215,7 @@ export class DocumentVerifiyScreen extends Component {
                   PASSPORT
                 </Text>
               </Button>
+
               <View
                 style={{
                   marginHorizontal: 8,
@@ -234,12 +297,7 @@ export class DocumentVerifiyScreen extends Component {
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
-                        onPress={() => {
-                          this.setState({
-                            imageSubmitted: true,
-                            progress: 0.33,
-                          });
-                        }}
+                        onPress={this.uploadImage}
                         style={{
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -332,114 +390,6 @@ export class DocumentVerifiyScreen extends Component {
                 }}
               />
 
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 5,
-                }}>
-                Place of issue
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.placeOfIssue}
-              </Text>
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 5,
-                }}>
-                Issuing Authority
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.issuingAuthority}
-              </Text>
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 5,
-                }}>
-                Date Of Issue
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.dateOfIssue}
-              </Text>
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 5,
-                }}>
-                Expiry Date
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.expiryDate}
-              </Text>
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
               <Button
                 mode="contained"
                 style={[styles.buttonStyle, {width: '90%', marginTop: 50}]}
@@ -501,42 +451,7 @@ export class DocumentVerifiyScreen extends Component {
                     color: '#6c757d',
                     flex: 0.7,
                   }}>
-                  {this.state.documentData.idType}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: 8,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: '700',
-                    color: AgrxColors.primary,
-                    flex: 0.4,
-                  }}>
-                  Address
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: '#6c757d',
-                    flex: 0.7,
-                  }}>
-                  {this.state.documentData.address}
+                  {this.state.documentData.name}
                 </Text>
               </View>
 
@@ -607,41 +522,6 @@ export class DocumentVerifiyScreen extends Component {
                     flex: 0.7,
                   }}>
                   {this.state.documentData.idNumber}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: 8,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: '700',
-                    color: AgrxColors.primary,
-                    flex: 0.4,
-                  }}>
-                  Gender
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: '#6c757d',
-                    flex: 0.7,
-                  }}>
-                  {this.state.documentData.gender}
                 </Text>
               </View>
 
