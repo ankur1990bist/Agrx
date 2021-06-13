@@ -489,7 +489,7 @@ export class RegisterScreen extends Component {
                         style={
                           isDark ? styles.updateTextDark : styles.updateText
                         }>
-                        Verify you number
+                        Verify your number
                       </Text>
                       <Text style={styles.subheadingText}>
                         Enter verification code sent to {phoneNumber}

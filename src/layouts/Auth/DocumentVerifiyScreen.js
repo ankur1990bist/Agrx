@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   View,
   StyleSheet,
-  PixelRatio,
+  BackHandler,
 } from 'react-native';
 import {TextInput, Button, ProgressBar, Checkbox} from 'react-native-paper';
 import AgrxColors from '../../config/AgrxColors';
@@ -19,6 +19,7 @@ import {UPLOAD_IMAGE} from '../../config/settings';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
 import RNFetchBlob from 'rn-fetch-blob';
+import Spinner from '../../components/SpinnerOverlay';
 
 export class DocumentVerifiyScreen extends Component {
   constructor(props) {
@@ -41,20 +42,37 @@ export class DocumentVerifiyScreen extends Component {
     };
   }
 
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = () => {
+    if (this.state.selectedImage == null) {
+      this.props.navigation.goBack();
+    } else if (this.state.imageSubmitted) {
+      this.setState({
+        imageSubmitted: false,
+      });
+    }
+    return true;
+  };
+
   imageTapped = (docType) => {
     this.setState({
       pressed: true,
     });
     const options = {
-      quality: 1.0,
-      maxWidth: 300,
-      maxHeight: 300,
       storageOptions: {
         skipBackup: true,
         cameraRoll: true,
       },
       allowsEditing: true,
       mediaType: 'photo',
+      saveToPhotos: false,
     };
 
     ImagePicker.showImagePicker(options, async (response) => {
@@ -126,6 +144,7 @@ export class DocumentVerifiyScreen extends Component {
           let docData = JSON.parse(resp.data);
           console.log(docData, 'docData');
           this.setState({
+            isLoading: false,
             imageSubmitted: true,
             progress: 0.33,
             documentData: {
@@ -153,6 +172,7 @@ export class DocumentVerifiyScreen extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <ProgressBar progress={this.state.progress} />
+        <Spinner visible={this.state.isLoading} />
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps={'always'}
           contentContainerStyle={{flexGrow: 1}}>

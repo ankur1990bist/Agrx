@@ -159,13 +159,13 @@ export class OtpScreen extends Component {
 
     console.log(body, 'body');
 
-    fetch(VERIFY_OTP + this.state.otp, {
+    fetch(VERIFY_OTP, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(),
+      body: JSON.stringify(body),
     }).then((response) => {
       console.log(response, 'response');
       if (response.ok) {
@@ -379,7 +379,7 @@ export class OtpScreen extends Component {
                 <View>
                   <Text
                     style={isDark ? styles.updateTextDark : styles.updateText}>
-                    Verify you number
+                    Verify your number
                   </Text>
                   <Text style={styles.subheadingText}>
                     Enter verification code sent to {phoneNumber}
