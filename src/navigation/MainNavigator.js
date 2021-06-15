@@ -140,7 +140,7 @@ function Auth() {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="IntroSlider">
+    <Stack.Navigator initialRouteName="DocumentVerifiyScreen">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}

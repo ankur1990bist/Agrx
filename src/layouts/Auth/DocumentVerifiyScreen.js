@@ -35,15 +35,26 @@ export class DocumentVerifiyScreen extends Component {
         dateOfBirth: '01/01/1995',
       },
       progress: 0,
-      showFinalDetails: false,
       tncAccepted: false,
       pressed: false,
       uploadProgress: '',
+      editDocType: false,
+      editDocNo: false,
+      editName: false,
+      editDOB: false,
+      type: '',
+      id: '',
+      name: '',
+      dob: '',
     };
   }
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    this.setState({
+      isLoading: false,
+      imageSubmitted: true,
+    });
   }
 
   componentWillUnmount() {
@@ -165,6 +176,34 @@ export class DocumentVerifiyScreen extends Component {
           isLoading: false,
         });
       });
+  };
+
+  onChangeType = (text) => {
+    this.setState({
+      type: text,
+      isManual: true,
+    });
+  };
+
+  onChangeNo = (text) => {
+    this.setState({
+      id: text,
+      isManual: true,
+    });
+  };
+
+  onChangeName = (text) => {
+    this.setState({
+      name: text,
+      isManual: true,
+    });
+  };
+
+  onChangeDOB = (text) => {
+    this.setState({
+      dob: text,
+      isManual: true,
+    });
   };
 
   render() {
@@ -337,7 +376,7 @@ export class DocumentVerifiyScreen extends Component {
                 )}
               </View>
             </View>
-          ) : !this.state.showFinalDetails ? (
+          ) : (
             <View style={{marginTop: 28, paddingLeft: 12}}>
               <Text
                 style={{
@@ -356,100 +395,148 @@ export class DocumentVerifiyScreen extends Component {
                 }}>
                 Below are the details we fetched from the document you uploaded.
               </Text>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 5,
-                }}>
-                Identity document type
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.idType}
-              </Text>
               <View
                 style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: AgrxColors.primary,
-                  marginTop: 12,
-                }}>
-                Document Id No
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: '#6c757d',
-                  marginTop: 5,
-                }}>
-                {this.state.documentData.idNumber}
-              </Text>
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <Button
-                mode="contained"
-                style={[styles.buttonStyle, {width: '90%', marginTop: 50}]}
-                onPress={() => {
-                  this.setState({
-                    progress: 0.66,
-                    showFinalDetails: true,
-                  });
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingVertical: 8,
                 }}>
                 <Text
                   style={{
                     fontSize: 18,
-                    color: '#fff',
-                    textTransform: 'none',
-                    fontWeight: '500',
+                    fontWeight: '700',
+                    color: AgrxColors.primary,
+                    flex: 0.4,
                   }}>
-                  Next
+                  Document type
                 </Text>
-              </Button>
-            </View>
-          ) : (
-            <View style={{marginTop: 28, paddingLeft: 12}}>
-              <Text
+                {this.state.editDocType ? (
+                  <TextInput
+                    mode="flat"
+                    keyboardType="default"
+                    placeholder="Enter document type"
+                    value={this.state.type}
+                    onChangeText={this.onChangeType}
+                    style={{
+                      // width: '60%',
+                      backgroundColor: 'transparent',
+                      // alignSelf: 'center',
+                      marginTop: 18,
+                      flex: 0.55,
+                      height: 30,
+                    }}
+                    underlineColor="transparent"
+                    underlineColorAndroid="transparent"
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: '#6c757d',
+                      flex: 0.55,
+                    }}>
+                    {this.state.documentData.idType}
+                  </Text>
+                )}
+                <TouchableOpacity
+                  style={{marginRight: 0}}
+                  onPress={() => {
+                    this.setState({
+                      editDocType: !this.state.editDocType,
+                    });
+                  }}>
+                  <MaterialCommunityIcon
+                    name={this.state.editDocType ? 'check' : 'pencil'}
+                    size={25}
+                    color={
+                      this.state.editDocType
+                        ? AgrxColors.igesiaSuccess
+                        : AgrxColors.igesiaGray
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <View
                 style={{
-                  fontSize: 32,
-                  color: '#009688',
-                  fontWeight: 'bold',
-                }}>
-                Id Details
-              </Text>
-              <Text
+                  marginTop: 3,
+                  borderTopWidth: 0.4,
+                  borderTopColor: AgrxColors.borderBottomColor,
+                  marginBottom: 16,
+                  width: '95%',
+                }}
+              />
+
+              <View
                 style={{
-                  fontSize: 14,
-                  color: '#6c757d',
-                  marginTop: 5,
-                  marginBottom: 12,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingVertical: 8,
                 }}>
-                Please verify below details which will be used to create your
-                profile.
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: '700',
+                    color: AgrxColors.primary,
+                    flex: 0.4,
+                  }}>
+                  Document Id No
+                </Text>
+                {this.state.editDocNo ? (
+                  <TextInput
+                    mode="flat"
+                    keyboardType="default"
+                    placeholder="Enter document number"
+                    value={this.state.id}
+                    onChangeText={this.onChangeNo}
+                    style={{
+                      // width: '60%',
+                      backgroundColor: 'transparent',
+                      // alignSelf: 'center',
+                      marginTop: 18,
+                      flex: 0.55,
+                      height: 30,
+                    }}
+                    underlineColor="transparent"
+                    underlineColorAndroid="transparent"
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: '#6c757d',
+                      flex: 0.55,
+                    }}>
+                    {this.state.documentData.idNumber}
+                  </Text>
+                )}
+                <TouchableOpacity
+                  style={{marginRight: 0}}
+                  onPress={() => {
+                    this.setState({
+                      editDocNo: !this.state.editDocNo,
+                    });
+                  }}>
+                  <MaterialCommunityIcon
+                    name={this.state.editDocNo ? 'check' : 'pencil'}
+                    size={25}
+                    color={
+                      this.state.editDocNo
+                        ? AgrxColors.igesiaSuccess
+                        : AgrxColors.igesiaGray
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  marginTop: 3,
+                  borderTopWidth: 0.4,
+                  borderTopColor: AgrxColors.borderBottomColor,
+                  marginBottom: 16,
+                  width: '95%',
+                }}
+              />
+
               <View
                 style={{
                   flexDirection: 'row',
@@ -465,14 +552,51 @@ export class DocumentVerifiyScreen extends Component {
                   }}>
                   Name
                 </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: '#6c757d',
-                    flex: 0.7,
+                {this.state.editName ? (
+                  <TextInput
+                    mode="flat"
+                    keyboardType="default"
+                    placeholder="Enter name"
+                    value={this.state.name}
+                    onChangeText={this.onChangeName}
+                    style={{
+                      // width: '60%',
+                      backgroundColor: 'transparent',
+                      // alignSelf: 'center',
+                      marginTop: 18,
+                      flex: 0.55,
+                      height: 30,
+                    }}
+                    underlineColor="transparent"
+                    underlineColorAndroid="transparent"
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: '#6c757d',
+                      flex: 0.55,
+                    }}>
+                    {this.state.documentData.name}
+                  </Text>
+                )}
+                <TouchableOpacity
+                  style={{marginRight: 0}}
+                  onPress={() => {
+                    this.setState({
+                      editName: !this.state.editName,
+                    });
                   }}>
-                  {this.state.documentData.name}
-                </Text>
+                  <MaterialCommunityIcon
+                    name={this.state.editName ? 'check' : 'pencil'}
+                    size={25}
+                    color={
+                      this.state.editName
+                        ? AgrxColors.igesiaSuccess
+                        : AgrxColors.igesiaGray
+                    }
+                  />
+                </TouchableOpacity>
               </View>
 
               <View
@@ -500,49 +624,51 @@ export class DocumentVerifiyScreen extends Component {
                   }}>
                   Date of birth
                 </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: '#6c757d',
-                    flex: 0.7,
+                {this.state.editDOB ? (
+                  <TextInput
+                    mode="flat"
+                    keyboardType="default"
+                    placeholder="Enter date of birth"
+                    value={this.state.dob}
+                    onChangeText={this.onChangeDOB}
+                    style={{
+                      // width: '60%',
+                      backgroundColor: 'transparent',
+                      // alignSelf: 'center',
+                      marginTop: 18,
+                      flex: 0.55,
+                      height: 30,
+                    }}
+                    underlineColor="transparent"
+                    underlineColorAndroid="transparent"
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: '#6c757d',
+                      flex: 0.55,
+                    }}>
+                    {this.state.documentData.dateOfBirth}
+                  </Text>
+                )}
+                <TouchableOpacity
+                  style={{marginRight: 0}}
+                  onPress={() => {
+                    this.setState({
+                      editDOB: !this.state.editDOB,
+                    });
                   }}>
-                  {this.state.documentData.dateOfBirth}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  marginTop: 3,
-                  borderTopWidth: 0.4,
-                  borderTopColor: AgrxColors.borderBottomColor,
-                  marginBottom: 16,
-                  width: '95%',
-                }}
-              />
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingVertical: 8,
-                }}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: '700',
-                    color: AgrxColors.primary,
-                    flex: 0.4,
-                  }}>
-                  Id Number
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: '#6c757d',
-                    flex: 0.7,
-                  }}>
-                  {this.state.documentData.idNumber}
-                </Text>
+                  <MaterialCommunityIcon
+                    name={this.state.editDOB ? 'check' : 'pencil'}
+                    size={25}
+                    color={
+                      this.state.editDOB
+                        ? AgrxColors.igesiaSuccess
+                        : AgrxColors.igesiaGray
+                    }
+                  />
+                </TouchableOpacity>
               </View>
 
               <View
@@ -609,7 +735,7 @@ export class DocumentVerifiyScreen extends Component {
                     textTransform: 'none',
                     fontWeight: '500',
                   }}>
-                  Submit
+                  Next
                 </Text>
               </Button>
             </View>
