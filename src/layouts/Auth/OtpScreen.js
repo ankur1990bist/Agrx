@@ -20,7 +20,6 @@ import {SEND_OTP, VERIFY_OTP} from '../../config/settings';
 import Spinner from '../../components/SpinnerOverlay';
 import Toast from 'react-native-simple-toast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Geolocation from 'react-native-geolocation-service';
 
 export class OtpScreen extends Component {
   constructor(props) {
@@ -42,33 +41,7 @@ export class OtpScreen extends Component {
 
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can use the location');
-        this.getLocation();
-      } else {
-        console.log('Location permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
   }
-
-  getLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        console.log(position, 'position');
-      },
-      (error) => {
-        // See error code charts below.
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  };
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);

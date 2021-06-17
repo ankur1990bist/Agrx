@@ -40,11 +40,16 @@ import OtpScreen from '../layouts/Auth/OtpScreen';
 import DocumentVerifiyScreen from '../layouts/Auth/DocumentVerifiyScreen';
 import ProfileDetails from '../layouts/Auth/ProfileDetails';
 import RegisterScreen from '../layouts/Auth/RegisterScreen';
-import Dashboard from '../layouts/Dashboard';
+import SelectFieldScreen from '../layouts/Auth/SelectFieldScreen';
 
 import AgrxColors from '../config/AgrxColors';
 
 import * as Animatable from 'react-native-animatable';
+import DashboardScreen from '../layouts/Dashboard/DashboardScreen';
+import MarketPlace from '../layouts/MarketPlace/MarketPlace';
+
+import Library from '../layouts/Library/Library';
+
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 // const Tab = createMaterialBottomTabNavigator();
@@ -140,7 +145,7 @@ function Auth() {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="DocumentVerifiyScreen">
+    <Stack.Navigator initialRouteName="SelectFieldScreen">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}
@@ -176,11 +181,228 @@ function IntroSliderStack() {
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
-        name="Dashboard"
-        component={Dashboard}
+        name="SelectFieldScreen"
+        component={SelectFieldScreen}
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
+      <Stack.Screen
+        name="HomeTab"
+        component={HomeTab}
+        options={(props) => {
+          const routeName = getFocusedRouteNameFromRoute(props.route);
+          return {
+            headerShown: routeName != 'Events',
+            headerStyle: {
+              elevation: 0,
+              shadowOpacity: 0,
+              backgroundColor: '#fff',
+              height: Platform.OS == 'android' ? 60 : 105,
+            },
+            title: '',
+
+            headerLeft: () => (
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <TouchableHighlight
+                  underlayColor="rgba(0, 0, 0, 0.1)"
+                  style={{
+                    height: 50,
+                    borderRadius: 25,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderColor: '#eff2f5',
+                    marginLeft: 5,
+                  }}
+                  onPress={() => {
+                    props.navigation.toggleDrawer();
+                  }}>
+                  <View
+                    style={{
+                      paddingHorizontal: 5,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    {/* <IonIcons
+                      name={'reorder-three-sharp'}
+                      size={35}
+                      color={'#212529'}
+                    /> */}
+                  </View>
+                </TouchableHighlight>
+              </View>
+            ),
+          };
+        }}
+      />
     </Stack.Navigator>
+  );
+}
+
+function handleBackButton() {
+  BackHandler.exitApp();
+  return true;
+}
+
+function HomeStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="DashboardScreen">
+      <Stack.Screen
+        name="DashboardScreen"
+        component={DashboardScreen}
+        options={{headerTitle: ' '}}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function MarketPlaceStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="MarketPlace">
+      <Stack.Screen
+        name="MarketPlace"
+        component={MarketPlace}
+        options={{headerTitle: ' '}}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function LibraryStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName="Library">
+      <Stack.Screen
+        name="Library"
+        component={Library}
+        options={{headerTitle: ' '}}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function HomeTab() {
+  const libraryRef = React.useRef(null);
+  const marketRef = React.useRef(null);
+  const homeRef = React.useRef(null);
+
+  return (
+    <Tab.Navigator
+      backBehavior="none"
+      initialRouteName="HomeStack"
+      tabBarPosition={'bottom'}
+      screenOptions={{
+        animationEnabled: true,
+        gestureEnabled: true,
+        ...TransitionPresets.FadeFromBottomAndroid,
+        transitionSpec: {
+          open: config,
+          close: config,
+        },
+      }}
+      lazy={true}
+      tabBarOptions={{
+        activeTintColor: AgrxColors.primary,
+        inactiveTintColor: 'gray',
+        showIcon: true,
+        tabStyle: [
+          {
+            paddingBottom: Platform.OS == 'ios' ? 20 : 8,
+            backgroundColor: '#fff',
+          },
+          Platform.OS == 'android' && {height: 60},
+        ],
+        labelStyle: {
+          fontSize: 10,
+        },
+        iconStyle: {},
+        allowFontScaling: true,
+        indicatorStyle: {height: 0},
+
+        // pressColor: 'transparent',
+      }}>
+      <Tab.Screen
+        listeners={{
+          tabPress: () => {
+            homeRef.current.zoomIn();
+            BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+          },
+          blur: () =>
+            BackHandler.removeEventListener(
+              'hardwareBackPress',
+              handleBackButton,
+            ),
+        }}
+        name="HomeStack"
+        component={HomeStack}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarColor: AgrxColors.primary,
+          tabBarIcon: ({color}) => {
+            return (
+              <AnimatedIcon
+                useNativeDriver={true}
+                ref={homeRef}
+                name="home"
+                size={25}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        listeners={{
+          tabPress: () => {
+            marketRef.current.zoomIn();
+          },
+        }}
+        name="MarketPlace"
+        component={MarketPlaceStack}
+        options={{
+          tabBarLabel: 'Market Place',
+          tabBarColor: AgrxColors.primary,
+          tabBarIcon: ({color}) => {
+            return (
+              <AnimatedIcon
+                useNativeDriver={true}
+                ref={marketRef}
+                name="shopping"
+                size={25}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        listeners={{
+          tabPress: () => {
+            libraryRef.current.zoomIn();
+          },
+        }}
+        name="Library"
+        component={LibraryStack}
+        options={{
+          tabBarLabel: 'Library',
+          tabBarColor: AgrxColors.primary,
+          tabBarIcon: ({color}) => {
+            return (
+              <AnimatedIcon
+                useNativeDriver={true}
+                ref={libraryRef}
+                name="library"
+                size={25}
+                color={color}
+              />
+            );
+          },
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
