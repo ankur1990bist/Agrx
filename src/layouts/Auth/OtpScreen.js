@@ -8,6 +8,7 @@ import {
   BackHandler,
   PixelRatio,
   PermissionsAndroid,
+  AsyncStorage,
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import AgrxColors from '../../config/AgrxColors';
@@ -36,6 +37,7 @@ export class OtpScreen extends Component {
       confirmPassword: '',
       showPassConfirm: false,
       setPassword: false,
+      phoneNumberFormatted: '',
     };
   }
 
@@ -61,6 +63,7 @@ export class OtpScreen extends Component {
   onChangePhoneNumber = (text) => {
     this.setState({
       phoneNumber: text,
+      phoneNumberFormatted: `+${this.phoneNumberField.getCallingCode()}${text}`,
       errors: [],
     });
   };
@@ -114,19 +117,53 @@ export class OtpScreen extends Component {
     this.setState({
       isLoading: true,
     });
-    fetch(SEND_OTP + this.state.phoneNumber, {
-      method: 'GET',
-    }).then((response) => {
-      console.log(response, 'response', response.ok);
-      if (response.ok) {
-        console.log('success');
-        Toast.show('OTP sent successfully!', Toast.LONG);
-        this.setState({
-          isLoading: false,
-          otpSent: true,
-        });
-      } else {
-        console.log('errro');
+
+    const body = {
+      mobileNo: this.state.phoneNumberFormatted,
+    };
+    console.log(body, 'body');
+
+    fetch(SEND_OTP, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'x-api-key': 'bf7fe978-c0f1-11eb-8089-0200cd936042',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response
+            .json()
+            .then((resposeData) => Promise.resolve(resposeData));
+        }
+        return response.json().then((errorData) => Promise.reject(errorData));
+      })
+      .then(
+        (responseJson) => {
+          console.log('json suceess', responseJson);
+          Toast.show('OTP sent successfully!', Toast.LONG);
+          // AsyncStorage.setItem('token', JSON.stringify(responseJson.Details));
+          this.setState({
+            isLoading: false,
+            otpSent: true,
+          });
+        },
+        (errors) => {
+          console.log('errors', errors);
+          let tempError = this.state.errors;
+          tempError['phoneError'] = 'Some error occured.';
+
+          this.setState({
+            isLoading: false,
+            otpSent: false,
+            errors: tempError,
+          });
+        },
+      )
+      .catch((error) => {
+        console.log('error', error);
         let errors = this.state.errors;
         errors['phoneError'] = 'Some error occured.';
 
@@ -135,8 +172,8 @@ export class OtpScreen extends Component {
           otpSent: false,
           errors: errors,
         });
-      }
-    });
+      })
+      .done();
   };
 
   verifyOtp = () => {
@@ -187,7 +224,9 @@ export class OtpScreen extends Component {
   };
 
   loginUser = () => {
-    this.props.navigation.navigate('DocumentVerifiyScreen');
+    this.props.navigation.navigate('DocumentVerifiyScreen', {
+      mobileNo: this.state.phoneNumberFormatted,
+    });
   };
 
   editPhone = () => {

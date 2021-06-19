@@ -101,48 +101,6 @@ const customDarkTheme = {
   },
 };
 
-function Auth() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#ffffff',
-          height: 60,
-        },
-        headerTintColor: '#515151',
-        headerTitleStyle: {
-          fontSize: 20,
-        },
-        animationEnabled: true,
-        ...TransitionPresets.DefaultTransition,
-      }}
-      initialRouteName={'Login'}>
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="OtpScreen"
-        component={OtpScreen}
-        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
-      />
-      <Stack.Screen
-        name="DocumentVerifiyScreen"
-        component={DocumentVerifiyScreen}
-        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
-      />
-      <Stack.Screen
-        name="RegisterScreen"
-        component={RegisterScreen}
-        options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function IntroSliderStack() {
   return (
     <Stack.Navigator initialRouteName="SelectFieldScreen">

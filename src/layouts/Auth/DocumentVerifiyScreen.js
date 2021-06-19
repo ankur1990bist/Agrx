@@ -15,7 +15,7 @@ import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {UPLOAD_IMAGE} from '../../config/settings';
+import {SAVE_DOCUMENT_DATA, UPLOAD_IMAGE} from '../../config/settings';
 import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -51,10 +51,6 @@ export class DocumentVerifiyScreen extends Component {
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.setState({
-      isLoading: false,
-      imageSubmitted: true,
-    });
   }
 
   componentWillUnmount() {
@@ -117,7 +113,14 @@ export class DocumentVerifiyScreen extends Component {
   };
 
   uploadImage = () => {
+    this.setState({
+      isLoading: false,
+      imageSubmitted: true,
+      progress: 0.33,
+    });
+    return;
     const {selectedImage} = this.state;
+    const mobileNo = this.props.route.params.mobileNo;
     let body = [
       {
         name: 'file',
@@ -126,6 +129,10 @@ export class DocumentVerifiyScreen extends Component {
           Platform.OS == 'android'
             ? RNFetchBlob.wrap(selectedImage.uri)
             : RNFetchBlob.wrap(selectedImage.uri.replace('file://', '')),
+      },
+      {
+        name: 'mobileNo',
+        data: mobileNo,
       },
     ];
 
@@ -204,6 +211,80 @@ export class DocumentVerifiyScreen extends Component {
       dob: text,
       isManual: true,
     });
+  };
+
+  saveData = () => {
+    this.setState(
+      {
+        progress: 1,
+      },
+      () => {
+        this.props.navigation.navigate('ProfileDetails');
+      },
+    );
+    return;
+    const body = {
+      farmerName: this.state.documentData.name,
+      dateOfBirth: this.state.documentData.dateOfBirth,
+      docType: this.state.documentData.idType,
+      documentNumber: this.state.documentData.name,
+      // gender: 'M',
+    };
+    console.log(body, 'body');
+
+    fetch(SAVE_DOCUMENT_DATA, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        // 'x-api-key': 'bf7fe978-c0f1-11eb-8089-0200cd936042',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response
+            .json()
+            .then((resposeData) => Promise.resolve(resposeData));
+        }
+        return response.json().then((errorData) => Promise.reject(errorData));
+      })
+      .then(
+        (responseJson) => {
+          console.log('json suceess', responseJson);
+          // this.setState(
+          //   {
+          //     progress: 1,
+          //   },
+          //   () => {
+          //     this.props.navigation.navigate('ProfileDetails');
+          //   },
+          // );
+        },
+        (errors) => {
+          console.log('errors', errors);
+          let tempError = this.state.errors;
+          tempError['globalError'] = 'Some error occured.';
+
+          this.setState({
+            isLoading: false,
+            otpSent: false,
+            errors: tempError,
+          });
+        },
+      )
+      .catch((error) => {
+        console.log('error', error);
+        let errors = this.state.errors;
+        errors['globalError'] = 'Some error occured.';
+
+        this.setState({
+          isLoading: false,
+          otpSent: false,
+          errors: errors,
+        });
+      })
+      .done();
   };
 
   render() {
@@ -719,14 +800,7 @@ export class DocumentVerifiyScreen extends Component {
                     Toast.show('Please accept terms and conditions first.');
                     return;
                   }
-                  this.setState(
-                    {
-                      progress: 1,
-                    },
-                    () => {
-                      this.props.navigation.navigate('ProfileDetails');
-                    },
-                  );
+                  this.saveData();
                 }}>
                 <Text
                   style={{

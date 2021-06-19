@@ -1481,7 +1481,7 @@ export class ProfileDetails extends Component {
                       }}
                       labelStyle={{color: '#fff'}}
                       onPress={() => {
-                        this.props.navigation.navigate('Dashboard');
+                        this.props.navigation.navigate('SelectFieldScreen');
                       }}>
                       Submit
                     </Button>

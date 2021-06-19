@@ -34,6 +34,7 @@ export class SelectFieldScreen extends Component {
       latitudeDelta: 0.015,
       longitudeDelta: 0.0121,
       finalAddress: '',
+      addressSelected: false,
     };
     this.timeout = null;
   }
@@ -81,14 +82,62 @@ export class SelectFieldScreen extends Component {
     }, 800);
   };
 
-  onMapDrag = (e) => {
-    const location = e.nativeEvent.coordinate;
+  onMapDrag = (e, d) => {
+    // return;
+    const location = {
+      longitude: e.longitude,
+      latitude: e.latitude,
+    };
+    // this.setState({
+    //   longitude: e.longitude,
+    //   latitude: e.latitude,
+    //   longitudeDelta: e.longitudeDelta,
+    //   latitudeDelta: e.latitudeDelta,
+    // });
     console.log(location, 'eeeee');
     clearTimeout(this.mapTimeout);
 
     this.mapTimeout = setTimeout(() => {
       this.getAddressFromLocation(location.latitude, location.longitude);
     }, 800);
+  };
+
+  getLatLongFromAddress = (address) => {
+    console.log(address, 'address');
+    fetch(SEARCH_ADDRESS + `json?address=${address}&key=` + MAP_API_KEY, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response
+            .json()
+            .then((resposeData) => Promise.resolve(resposeData));
+        }
+        return response.json().then((errorData) => Promise.reject(errorData));
+      })
+      .then(
+        (responseJson) => {
+          console.log(responseJson, 'responseJSON getLatLongFromAddress');
+          if (responseJson?.results.length > 0) {
+            const data = responseJson.results[0].geometry.location;
+            this.setState({
+              latitude: data.lat,
+              longitude: data.lng,
+            });
+          }
+        },
+        (errors) => {
+          console.log('errors', errors);
+        },
+      )
+      .catch((error) => {
+        console.log('error', error);
+      })
+      .done();
   };
 
   getAddressFromLocation = (lat, lang) => {
@@ -111,9 +160,14 @@ export class SelectFieldScreen extends Component {
       .then(
         (responseJson) => {
           console.log(responseJson, 'responseJSON');
-          this.setState({
-            finalAddress: responseJson?.results[0]?.formatted_address,
-          });
+          if (responseJson?.results.length > 0) {
+            this.setState({
+              finalAddress: responseJson?.results[0]?.formatted_address,
+              addressSelected: true,
+              longitude: lang,
+              latitude: lat,
+            });
+          }
         },
         (errors) => {
           console.log('errors', errors);
@@ -124,6 +178,7 @@ export class SelectFieldScreen extends Component {
       })
       .done();
   };
+
   searchLocation = (text) => {
     fetch(SEARCH_AUTOCOMPLETE + `json?input=${text}&key=` + MAP_API_KEY, {
       method: 'GET',
@@ -145,6 +200,7 @@ export class SelectFieldScreen extends Component {
           console.log(responseJson, 'responseJSON');
           this.setState({
             address: responseJson.predictions,
+            addressSelected: false,
           });
         },
         (errors) => {
@@ -163,7 +219,9 @@ export class SelectFieldScreen extends Component {
         onPress={() => {
           this.setState({
             finalAddress: item.description,
+            addressSelected: true,
           });
+          this.getLatLongFromAddress(item.description);
         }}
         style={{
           backgroundColor: '#fff',
@@ -178,11 +236,25 @@ export class SelectFieldScreen extends Component {
     );
   };
 
+  selectAddress = () => {
+    console.log(
+      this.state.latitude,
+      'latitude ',
+      'longitude',
+      this.state.longitude,
+      'finalAddress',
+      this.state.finalAddress,
+    );
+    this.props.navigation.navigate('HomeTab');
+  };
+
   render() {
     const {latitudeDelta, latitude, longitudeDelta, longitude} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+        <ScrollView
+          contentContainerStyle={{flexGrow: 1}}
+          keyboardShouldPersistTaps="always">
           <View style={{marginTop: 12, paddingHorizontal: 12}}>
             <Text style={{fontSize: 32, color: '#009688', fontWeight: 'bold'}}>
               Where is your field located?
@@ -226,7 +298,7 @@ export class SelectFieldScreen extends Component {
                 underlineColorAndroid="transparent"
               />
 
-              {this.state.address.length > 0 && (
+              {this.state.address.length > 0 && !this.state.addressSelected && (
                 <View>
                   <Text
                     style={{
@@ -262,9 +334,10 @@ export class SelectFieldScreen extends Component {
                   height: 200,
                   alignSelf: 'center',
                 }}
-                onPanDrag={(e) => {
-                  this.onMapDrag(e);
+                onRegionChange={(e, d) => {
+                  this.onMapDrag(e, d);
                 }}
+                loadingEnabled={true}
                 draggable
                 showsUserLocation={true}
                 loadingEnabled={true}
@@ -276,30 +349,30 @@ export class SelectFieldScreen extends Component {
                 }}></MapView>
             </View>
           </View>
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: 50,
-            }}>
-            <Button
-              mode="contained"
-              style={styles.buttonStyle}
-              onPress={() => this.props.navigation.navigate('HomeTab')}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: '#fff',
-                  textTransform: 'none',
-                  fontWeight: '500',
-                }}>
-                Confrim
-              </Text>
-            </Button>
-          </View>
         </ScrollView>
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 50,
+          }}>
+          <Button
+            mode="contained"
+            style={styles.buttonStyle}
+            onPress={this.selectAddress}>
+            <Text
+              style={{
+                fontSize: 18,
+                color: '#fff',
+                textTransform: 'none',
+                fontWeight: '500',
+              }}>
+              Confirm
+            </Text>
+          </Button>
+        </View>
       </SafeAreaView>
     );
   }

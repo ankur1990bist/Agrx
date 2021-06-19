@@ -28,23 +28,16 @@ class IntroSlider extends PureComponent {
   }
 
   componentDidMount() {
-    AsyncStorage.getItem('tokenFound').then((token) => {
-      if (token == 'true') {
-        this.setState(
-          {
-            loading: false,
-          },
-          () => {
-            // this.props.navigation.navigate('WorkspaceStack');
-          },
-        );
-
-        SplashScreen.hide();
-      } else {
-        SplashScreen.hide();
-        // this.props.navigation.navigate('Auth');
-      }
-    });
+    // AsyncStorage.getItem('token').then((token) => {
+    //   console.log(token, 'tokentoken');
+    //   if (token) {
+    //     this.props.navigation.navigate('DocumentVerifiyScreen');
+    //     SplashScreen.hide();
+    //   } else {
+    //     SplashScreen.hide();
+    //     // this.props.navigation.navigate('Auth');
+    //   }
+    // });
   }
 
   setSliderPage = (event) => {

@@ -255,7 +255,7 @@ export class DashboardScreen extends Component {
             height: 60,
             width: 60,
             borderRadius: 8,
-            marginTop: 30,
+            marginTop: 50,
             backgroundColor: AgrxColors.primary,
             alignSelf: 'center',
           }}>
