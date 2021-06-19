@@ -317,6 +317,7 @@ export class SelectFieldScreen extends Component {
                       marginVertical: 8,
                       maxHeight: 120,
                     }}
+                    keyboardShouldPersistTaps={'always'}
                     data={this.state.address}
                     renderItem={this.renderAddress}
                     keyExtractor={(item) => item.place_id}

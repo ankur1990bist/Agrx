@@ -103,7 +103,7 @@ const customDarkTheme = {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="SelectFieldScreen">
+    <Stack.Navigator initialRouteName="DocumentVerifiyScreen">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}
