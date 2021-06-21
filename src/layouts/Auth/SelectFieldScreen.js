@@ -256,7 +256,7 @@ export class SelectFieldScreen extends Component {
           contentContainerStyle={{flexGrow: 1}}
           keyboardShouldPersistTaps="always">
           <View style={{marginTop: 12, paddingHorizontal: 12}}>
-            <Text style={{fontSize: 32, color: '#009688', fontWeight: 'bold'}}>
+            <Text style={{fontSize: 28, color: '#009688', fontWeight: 'bold'}}>
               Where is your field located?
             </Text>
             <Text style={{fontSize: 16, color: '#6c757d', marginTop: 5}}>

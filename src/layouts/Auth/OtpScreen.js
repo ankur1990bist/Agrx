@@ -224,7 +224,7 @@ export class OtpScreen extends Component {
   };
 
   loginUser = () => {
-    this.props.navigation.navigate('DocumentVerifiyScreen', {
+    this.props.navigation.navigate('HomeTab', {
       mobileNo: this.state.phoneNumberFormatted,
     });
   };

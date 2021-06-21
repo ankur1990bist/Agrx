@@ -103,7 +103,7 @@ const customDarkTheme = {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="DocumentVerifiyScreen">
+    <Stack.Navigator initialRouteName="IntroSlider">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}
@@ -149,7 +149,7 @@ function IntroSliderStack() {
         options={(props) => {
           const routeName = getFocusedRouteNameFromRoute(props.route);
           return {
-            headerShown: routeName != 'Events',
+            headerShown: false,
             headerStyle: {
               elevation: 0,
               shadowOpacity: 0,

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  BackHandler,
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import AgrxColors from '../../config/AgrxColors';
@@ -12,90 +13,6 @@ import * as Animatable from 'react-native-animatable';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const farmerData = {
-  farmerCategories: [
-    {
-      id: 0,
-      value: 'Marginal Farmers',
-      description: 'Farmers who have less than 1 hectare of land',
-    },
-    {
-      id: 1,
-      value: 'Small Farmers',
-      description: 'Farmers who have 1 to 2 hectare of land',
-    },
-    {
-      id: 2,
-      value: 'Semi Medium Farmers',
-      description: 'Farmers who have 2 to 4 hectare of land',
-    },
-    {
-      id: 3,
-      value: 'Medium Farmers',
-      description: 'Farmers who have 4 to 10 hectare of land',
-    },
-    {
-      id: 4,
-      value: 'Large Farmers',
-      description: 'Farmers who have 10 hectare or above of land',
-    },
-    {
-      id: 5,
-      value: `Doesn't own Land`,
-      description: 'Farmers who does farming on others land',
-    },
-  ],
-
-  landOnLease: [
-    {id: 0, value: 'Written Contract'},
-    {id: 1, value: 'Enforceable Lease'},
-    {id: 2, value: 'Cash Lease'},
-    {id: 3, value: 'Crop Share Lease'},
-  ],
-
-  farmingPattern: [
-    {
-      id: 0,
-      value: 'Mono Cropping',
-      description: 'Only one crop is grown on farm land year after year',
-    },
-    {
-      id: 1,
-      value: 'Multiple Cropping',
-      description:
-        'Farmers grows two or more crops on farm land in one calendar year',
-    },
-    {
-      id: 2,
-      value: 'Inter Cropping',
-      description:
-        'Farmers grows two or more crops simultaneously on the same field in one calendar year',
-    },
-  ],
-
-  waterType: [
-    {id: 0, value: 'Rainfed Water'},
-    {id: 1, value: 'Irrigated Farming'},
-  ],
-};
-
-const nonFarmerData = [
-  'Cattleman',
-  'Labour',
-  'Orchadists',
-  'Viticulturist',
-  'Buyers',
-  'Seed Keepers',
-  'Village Trader',
-  'Commission Agent',
-  'Transport Operators',
-  'Storage Operators',
-  'Weighman',
-  'Processors',
-  'Wholesaler',
-  'Retailer',
-];
 
 export class ProfileDetails extends Component {
   constructor(props) {
@@ -111,6 +28,21 @@ export class ProfileDetails extends Component {
       categoryText: '',
     };
   }
+
+  async componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton = () => {
+    this.setState({
+      occupationCategory: 0,
+    });
+    return true;
+  };
 
   onChangeText = (text) => {
     this.setState({
@@ -1483,7 +1415,7 @@ export class ProfileDetails extends Component {
                       onPress={() => {
                         this.props.navigation.navigate('SelectFieldScreen');
                       }}>
-                      Submit
+                      Next
                     </Button>
                   </Animatable.View>
                 </View>

@@ -7,6 +7,7 @@ import {
   Dimensions,
   BackHandler,
   FlatList,
+  Alert,
 } from 'react-native';
 import AgrxColors from '../../config/AgrxColors';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -59,7 +60,26 @@ export class DashboardScreen extends Component {
   };
 
   handleBackButton = () => {
-    BackHandler.exitApp();
+    Alert.alert(
+      'Logout',
+      'Are you sure, you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            this.props.navigation.navigate('IntroSlider');
+
+            // props.navigation.pop();
+          },
+        },
+      ],
+      {cancelable: false},
+    );
     return true;
   };
 
@@ -137,13 +157,24 @@ export class DashboardScreen extends Component {
           paddingHorizontal: 8,
           marginVertical: 5,
           marginHorizontal: 8,
+          backgroundColor: '#fff',
+          borderRadius: 5,
+          padding: 5,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 2,
         }}>
         <FastImage
           source={{uri: item.image}}
-          style={{height: 50, width: 50, borderRadius: 5}}
+          style={{height: 60, width: 60, borderRadius: 8}}
         />
-        <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.name}</Text>
-        <Text style={{fontSize: 18, color: AgrxColors.igesiaGray}}>
+        <Text style={{fontSize: 16, fontWeight: 'bold'}}>{item.name}</Text>
+        <Text style={{fontSize: 14, color: AgrxColors.igesiaGray}}>
           {item.time}
         </Text>
       </TouchableOpacity>
@@ -160,7 +191,7 @@ export class DashboardScreen extends Component {
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: 12,
-            marginTop: 8,
+            marginTop: 14,
           }}>
           <TouchableOpacity
             style={{
@@ -263,7 +294,7 @@ export class DashboardScreen extends Component {
         </TouchableOpacity>
         <Text
           style={{
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: 'bold',
             textAlign: 'center',
             color: AgrxColors.igesiaGray,

@@ -30,9 +30,9 @@ export class DocumentVerifiyScreen extends Component {
       imageSubmitted: false,
       documentData: {
         idType: 'Passport',
-        idNumber: '1212',
-        name: 'John anderson',
-        dateOfBirth: '01/01/1995',
+        idNumber: 'AWLPV1081D',
+        name: 'DEEPAK VERMA',
+        dateOfBirth: '14/08/1996',
       },
       progress: 0,
       tncAccepted: false,

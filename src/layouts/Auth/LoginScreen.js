@@ -48,7 +48,7 @@ export class LoginScreen extends Component {
                   fontSize: 20,
                   color: '#000',
                   marginTop: 35,
-                  textAlign: 'left',
+                  textAlign: 'center',
                 }}>
                 How should we address you?
               </Text>
@@ -125,7 +125,7 @@ export class LoginScreen extends Component {
                     fontSize: 20,
                     color: '#000',
                     marginTop: 35,
-                    textAlign: 'left',
+                    textAlign: 'center',
                   }}>
                   What should we call you?
                 </Text>
