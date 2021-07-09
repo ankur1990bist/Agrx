@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   View,
   BackHandler,
+  FlatList,
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import AgrxColors from '../../config/AgrxColors';
@@ -13,24 +14,86 @@ import * as Animatable from 'react-native-animatable';
 import {connect} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {DAIRYMAN_DATA} from '../../config/settings';
+
+const nonFarmerData = [
+  {
+    title: 'Dairy Man',
+    child: {
+      title: 'You work in your',
+      options: [
+        {
+          title: 'Own Farm',
+          child: {
+            title: 'What is your herd size?',
+            options: ['5-20', '20-30', '30-40', '50 or more'],
+          },
+        },
+        {
+          title: 'Hired by other farm',
+          child: {
+            title: 'You are paid on:',
+            options: ['Hourly Basis', 'Fixed Pay'],
+          },
+        },
+      ],
+    },
+  },
+  {
+    title: 'Labourer',
+  },
+  {
+    title: 'Horticulturist',
+  },
+  {
+    title: 'Honey Farmer',
+  },
+];
+
+let initialState = {
+  name: '',
+  occupationCategory: null, // 0 = farmer , 1 = non farmer
+  farmerCategory: null,
+  landOnLease: null,
+  farmingPattern: null,
+  waterAvailableType: null,
+  categoryText: '',
+  nonFarmerOption: null,
+  subData: {},
+  workPlace: null,
+  herdSize: null,
+  paidOn: null,
+};
 
 export class ProfileDetails extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      name: '',
-      occupationCategory: null, // 0 = farmer , 1 = non farmer
-      farmerCategory: null,
-      landOnLease: null,
-      farmingPattern: null,
-      waterAvailableType: null,
-      categoryText: '',
-    };
+    this.state = initialState;
   }
 
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    this.props.navigation.setOptions({
+      headerRight: () => {
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              this.setState(initialState);
+            }}
+            style={{margin: 8}}>
+            <Text
+              style={{
+                color: AgrxColors.primary,
+                fontWeight: 'bold',
+                fontSize: 18,
+              }}>
+              Reset
+            </Text>
+          </TouchableOpacity>
+        );
+      },
+    });
   }
 
   componentWillUnmount() {
@@ -101,6 +164,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 0 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Marginal Farmers
             </Text>
@@ -142,6 +206,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 1 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Small farmers
             </Text>
@@ -192,6 +257,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 2 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Semi Medium Farmers
             </Text>
@@ -233,6 +299,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 3 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Medium Farmers
             </Text>
@@ -283,6 +350,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 4 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Large Farmers
             </Text>
@@ -324,6 +392,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmerCategory == 5 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Doesn't own Land
             </Text>
@@ -398,6 +467,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.landOnLease == 0 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Written Contract
             </Text>
@@ -427,6 +497,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.landOnLease == 1 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Enforceable Lease
             </Text>
@@ -457,13 +528,14 @@ export class ProfileDetails extends Component {
 
               borderWidth: 0.4,
               borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
+              width: '45%',
             }}>
             <Text
               style={{
                 fontSize: 16,
                 padding: 12,
                 color: this.state.landOnLease == 2 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Cash lease
             </Text>
@@ -485,7 +557,7 @@ export class ProfileDetails extends Component {
 
               borderWidth: 0.4,
               borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
+              width: '45%',
               marginLeft: 12,
             }}>
             <Text
@@ -493,6 +565,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.landOnLease == 3 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Crop share Lease
             </Text>
@@ -547,13 +620,14 @@ export class ProfileDetails extends Component {
 
               borderWidth: 0.4,
               borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
+              width: '45%',
             }}>
             <Text
               style={{
                 fontSize: 16,
                 padding: 12,
                 color: this.state.waterAvailableType == 0 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Rainfed water
             </Text>
@@ -575,7 +649,7 @@ export class ProfileDetails extends Component {
 
               borderWidth: 0.4,
               borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
+              width: '45%',
               marginLeft: 12,
             }}>
             <Text
@@ -583,6 +657,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.waterAvailableType == 1 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Irrigated Farming
             </Text>
@@ -643,6 +718,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmingPattern == 0 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Mono Cropping
             </Text>
@@ -684,6 +760,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmingPattern == 1 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Multiple Cropping
             </Text>
@@ -734,6 +811,7 @@ export class ProfileDetails extends Component {
                 fontSize: 16,
                 padding: 12,
                 color: this.state.farmingPattern == 2 ? '#fff' : '#000',
+                textAlign: 'center',
               }}>
               Inter Cropping
             </Text>
@@ -758,534 +836,238 @@ export class ProfileDetails extends Component {
     );
   };
 
-  nonFarmerOptions = () => {
+  // getDairyManData = () => {
+  //   fetch(DAIRYMAN_DATA, {
+  //     method: 'GET',
+  //     headers: {
+  //       Accept: 'application/json',
+  //       // 'x-api-key': 'bf7fe978-c0f1-11eb-8089-0200cd936042',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //     .then((response) => {
+  //       if (response.ok) {
+  //         return response
+  //           .json()
+  //           .then((resposeData) => Promise.resolve(resposeData));
+  //       }
+  //       return response.json().then((errorData) => Promise.reject(errorData));
+  //     })
+  //     .then(
+  //       (responseJson) => {
+  //         console.log('json suceess', responseJson);
+  //         this.setState({
+  //           subData: responseJson['Dairy Man'],
+  //         });
+  //       },
+  //       (errors) => {
+  //         console.log('errors', errors);
+  //       },
+  //     )
+  //     .catch((error) => {
+  //       console.log('error', error);
+  //     })
+  //     .done();
+  // };
+
+  nonnonFarmerOptions = () => {
     const {isDark} = this.props.agrxTheme;
-    const {farmerOption} = this.state;
+    const {nonFarmerOption} = this.state;
+
+    if (nonFarmerOption != null) {
+      return this.renderDairyMan();
+    }
+
     return (
-      <Animatable.View animation="slideInRight" useNativeDriver={true}>
+      <View>
+        <FlatList
+          // horizontal={true}
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+            marginTop: 16,
+          }}
+          numColumns={2}
+          data={nonFarmerData}
+          contentContainerStyle={{flex: 1, justifyContent: 'center'}}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    nonFarmerOption: index,
+                  });
+                }}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor:
+                    item == this.state.selectedCat1
+                      ? AgrxColors.primary
+                      : 'transparent',
+                  borderRadius: 5,
+
+                  borderWidth: 0.4,
+                  borderColor: AgrxColors.borderBottomColor,
+                  padding: 12,
+                  marginHorizontal: 5,
+                  marginTop: 5,
+                  alignSelf: 'center',
+                  width: '45%',
+                }}>
+                <Text style={{fontSize: 16}}>{item.title}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </View>
+    );
+  };
+
+  renderDairyMan = () => {
+    const data = nonFarmerData[this.state.nonFarmerOption];
+    if (this.state.workPlace != null) {
+      return this.renderWorkplace();
+    }
+    return (
+      <View style={{flex: 1}}>
         <Text
           style={{
-            fontSize: 20,
-            color: '#000',
-            marginTop: 25,
-            textAlign: 'left',
+            fontSize: 18,
+            marginTop: 8,
           }}>
-          Please select any one
+          {data.child.title}
         </Text>
 
-        <View
+        <FlatList
+          // horizontal={true}
           style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 0,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 0
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 0 ? '#fff' : '#000',
-              }}>
-              Cattleman
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 1,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 1
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 1 ? '#fff' : '#000',
-              }}>
-              Labour
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 2,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 2
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 2 ? '#fff' : '#000',
-              }}>
-              Orchadists
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 3,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 3
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 3 ? '#fff' : '#000',
-              }}>
-              Viticulturist
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 4,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 4
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 4 ? '#fff' : '#000',
-              }}>
-              Buyers
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 5,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 5
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 5 ? '#fff' : '#000',
-              }}>
-              Seed Keepers
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 6,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 6
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 6 ? '#fff' : '#000',
-              }}>
-              Village Trader
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 7,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 7
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 7 ? '#fff' : '#000',
-              }}>
-              Commission Agent
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 8,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 8
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 8 ? '#fff' : '#000',
-              }}>
-              Transport Operators
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 9,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 9
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 9 ? '#fff' : '#000',
-              }}>
-              Storage Operators
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 10,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 10
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 10 ? '#fff' : '#000',
-              }}>
-              Weighman
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 11,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 11
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 11 ? '#fff' : '#000',
-              }}>
-              Processors
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 16,
-            justifyContent: 'space-around',
-          }}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 12,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 12
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 12 ? '#fff' : '#000',
-              }}>
-              Wholesaler
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({
-                farmerOption: 13,
-              });
-            }}
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor:
-                this.state.farmerOption == 13
-                  ? AgrxColors.primary
-                  : 'transparent',
-              borderRadius: 5,
-
-              borderWidth: 0.4,
-              borderColor: AgrxColors.borderBottomColor,
-              minWidth: '45%',
-              marginLeft: 12,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                padding: 12,
-                color: this.state.farmerOption == 13 ? '#fff' : '#000',
-              }}>
-              Retailer
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({
-              farmerOption: 14,
-            });
-          }}
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor:
-              this.state.farmerOption == 14
-                ? AgrxColors.primary
-                : 'transparent',
-            borderRadius: 5,
-
-            borderWidth: 0.4,
-            borderColor: AgrxColors.borderBottomColor,
-            width: '65%',
-            marginTop: 8,
+            width: '90%',
             alignSelf: 'center',
-          }}>
+            marginTop: 16,
+          }}
+          numColumns={2}
+          data={data.child.options}
+          contentContainerStyle={{flex: 1, justifyContent: 'center'}}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  this.setState({
+                    workPlace: index,
+                  });
+                }}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor:
+                    item == this.state.selectedCat1
+                      ? AgrxColors.primary
+                      : 'transparent',
+                  borderRadius: 5,
+
+                  borderWidth: 0.4,
+                  borderColor: AgrxColors.borderBottomColor,
+                  padding: 12,
+                  marginHorizontal: 5,
+                  marginTop: 5,
+                  alignSelf: 'center',
+                  width: '45%',
+                }}>
+                <Text style={{fontSize: 16}}>{item.title}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </View>
+    );
+  };
+
+  renderWorkplace = () => {
+    const data =
+      nonFarmerData[this.state.nonFarmerOption].child.options[
+        this.state.workPlace
+      ];
+    if (this.state.herdSize != null) {
+    }
+
+    console.log(data, 'data renderWorkpace');
+    return (
+      <View style={{flex: 1}}>
+        {data.child.title && (
           <Text
             style={{
-              fontSize: 16,
-              padding: 12,
-              color: this.state.farmerOption == 14 ? '#fff' : '#000',
+              fontSize: 18,
+              marginTop: 8,
             }}>
-            Other
+            {data.child.title}
           </Text>
-        </TouchableOpacity>
-
-        {this.state.farmerOption == 14 && (
-          <Animatable.View animation="slideInRight" useNativeDriver={true}>
-            <TextInput
-              mode="outlined"
-              keyboardType="default"
-              placeholder="Kindly specify"
-              value={this.state.categoryText}
-              onChangeText={this.onChangeText}
-              style={{
-                width: '80%',
-                backgroundColor: '#fff',
-                alignSelf: 'center',
-                marginTop: 18,
-              }}
-              underlineColor="transparent"
-              underlineColorAndroid="transparent"
-            />
-          </Animatable.View>
         )}
-      </Animatable.View>
+
+        <FlatList
+          // horizontal={true}
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+            marginTop: 16,
+          }}
+          numColumns={2}
+          data={data.child.options}
+          contentContainerStyle={{flex: 1, justifyContent: 'center'}}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  if (this.state.workPlace == 0) {
+                    this.setState({
+                      herdSize: item,
+                    });
+                  } else {
+                    this.setState({
+                      paidOn: item,
+                    });
+                  }
+                }}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor:
+                    this.state.workPlace == 0
+                      ? item == this.state.herdSize
+                        ? AgrxColors.primary
+                        : 'transparent'
+                      : item == this.state.paidOn
+                      ? AgrxColors.primary
+                      : 'transparent',
+                  borderRadius: 5,
+
+                  borderWidth: 0.4,
+                  borderColor: AgrxColors.borderBottomColor,
+                  padding: 12,
+                  marginHorizontal: 5,
+                  marginTop: 5,
+                  alignSelf: 'center',
+                  width: '45%',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color:
+                      this.state.workPlace == 0
+                        ? item == this.state.herdSize
+                          ? '#fff'
+                          : '#000'
+                        : item == this.state.paidOn
+                        ? '#fff'
+                        : '#000',
+                  }}>
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </View>
     );
   };
 
@@ -1298,7 +1080,7 @@ export class ProfileDetails extends Component {
       farmingPattern,
       waterAvailableType,
     } = this.state;
-    console.log(occupationCategory, 'occupationCategory');
+
     return (
       <SafeAreaView style={{flex: 1}}>
         <KeyboardAwareScrollView
@@ -1315,81 +1097,301 @@ export class ProfileDetails extends Component {
               We need little more information to serve you better
             </Text>
             <Animatable.View animation="slideInRight" useNativeDriver={true}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  color: '#000',
-                  marginTop: 25,
-                  textAlign: 'left',
-                }}>
-                Your occupation category
-              </Text>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 16,
-                  justifyContent: 'space-around',
-                }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      occupationCategory: 0,
-                    });
-                  }}
+              {occupationCategory == null && (
+                <Text
                   style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor:
-                      occupationCategory == 0
-                        ? AgrxColors.primary
-                        : 'transparent',
-                    borderRadius: 5,
-
-                    borderWidth: 0.4,
-                    borderColor: AgrxColors.borderBottomColor,
-                    minWidth: '45%',
+                    fontSize: 20,
+                    color: '#000',
+                    marginTop: 25,
+                    textAlign: 'left',
                   }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      padding: 12,
-                      color: occupationCategory == 0 ? '#fff' : '#000',
-                    }}>
-                    Farmer
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.setState({
-                      occupationCategory: 1,
-                    });
-                  }}
+                  Your occupation category
+                </Text>
+              )}
+
+              {occupationCategory == null && (
+                <View
                   style={{
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor:
-                      occupationCategory == 1
-                        ? AgrxColors.primary
-                        : 'transparent',
-                    borderRadius: 5,
-
-                    borderWidth: 0.4,
-                    borderColor: AgrxColors.borderBottomColor,
-                    minWidth: '45%',
-                    marginLeft: 12,
+                    marginTop: 16,
+                    justifyContent: 'space-around',
+                    flexWrap: 'wrap',
                   }}>
-                  <Text
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 0,
+                      });
+                    }}
                     style={{
-                      fontSize: 16,
-                      padding: 12,
-                      color: occupationCategory == 1 ? '#fff' : '#000',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 0
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
                     }}>
-                    Non farmer
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 0 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Producer / Grower
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 1,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 1
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 1 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Non farmer
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 2,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 2
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 2 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Corporate Seller
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 3,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 3
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 3 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Customer / Buyer
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 4,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 4
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 4 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Support Community
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 5,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 5
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 5 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Monitoring Community
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 6,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 6
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 6 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      {'Labour & Employment'}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 7,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 7
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 7 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Finance
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState({
+                        occupationCategory: 8,
+                      });
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor:
+                        occupationCategory == 8
+                          ? AgrxColors.primary
+                          : 'transparent',
+                      borderRadius: 5,
+
+                      borderWidth: 0.4,
+                      borderColor: AgrxColors.borderBottomColor,
+                      width: '45%',
+                      marginTop: 8,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        padding: 12,
+                        color: occupationCategory == 8 ? '#fff' : '#000',
+                        textAlign: 'center',
+                      }}>
+                      Others
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </Animatable.View>
 
             <View>
@@ -1421,7 +1423,7 @@ export class ProfileDetails extends Component {
                 </View>
               ) : occupationCategory == 1 ? (
                 <View>
-                  {this.nonFarmerOptions()}
+                  {this.nonnonFarmerOptions()}
                   <Animatable.View
                     animation="slideInRight"
                     useNativeDriver={true}>
@@ -1438,7 +1440,7 @@ export class ProfileDetails extends Component {
                       onPress={() => {
                         this.props.navigation.navigate('Dashboard');
                       }}>
-                      Submit
+                      Next
                     </Button>
                   </Animatable.View>
                 </View>

@@ -83,11 +83,6 @@ export class RegisterScreen extends Component {
   };
 
   sendOtp = () => {
-    this.setState({
-      isLoading: false,
-      otpSent: true,
-    });
-    return;
     const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     console.log(
       regex.test(this.state.phoneNumber),
@@ -175,11 +170,6 @@ export class RegisterScreen extends Component {
   };
 
   verifyOtp = () => {
-    this.setState({
-      isLoading: false,
-      setPassword: true,
-    });
-    return;
     if (this.state.otp.length <= 1) {
       let errors = this.state.errors;
       errors['globalError'] = 'Please enter OTP';
@@ -194,7 +184,7 @@ export class RegisterScreen extends Component {
     });
 
     const body = {
-      mobileNo: this.state.phoneNumber,
+      mobileNo: this.state.phoneNumberFormatted,
       otp: this.state.otp,
     };
 
@@ -207,31 +197,49 @@ export class RegisterScreen extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }).then((response) => {
-      console.log(response, 'response');
-      if (response.ok) {
-        this.setState({
-          isLoading: false,
-          setPassword: true,
-        });
-      } else {
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response
+            .json()
+            .then((resposeData) => Promise.resolve(resposeData));
+        }
+        return response.json().then((errorData) => Promise.reject(errorData));
+      })
+      .then(
+        (responseJson) => {
+          console.log(responseJson, 'responseJson success');
+          this.setState({
+            isLoading: false,
+            setPassword: true,
+          });
+        },
+        (errors) => {
+          console.log('errors', errors);
+          let tempError = this.state.errors;
+          tempError['phoneError'] = 'Some error occured.';
+
+          this.setState({
+            isLoading: false,
+            otpSent: false,
+            errors: tempError,
+          });
+        },
+      )
+      .catch((error) => {
+        console.log('error', error);
         let errors = this.state.errors;
-        errors['globalError'] = 'Invalid OTP';
+        errors['phoneError'] = 'Some error occured.';
+
         this.setState({
           isLoading: false,
           errors: errors,
         });
-      }
-    });
+      })
+      .done();
   };
 
   createAccount = () => {
-    this.loginUser();
-    this.setState({
-      isLoading: false,
-      setPassword: true,
-    });
-    return;
     if (this.state.password.length <= 6) {
       let errors = this.state.errors;
       errors['globalError'] = 'Password should be of atleast 6 characters.';
@@ -255,7 +263,7 @@ export class RegisterScreen extends Component {
     });
 
     const body = {
-      mobileNo: this.state.phoneNumber,
+      mobileNo: this.state.phoneNumberFormatted,
       password: this.state.password,
     };
 
@@ -288,7 +296,9 @@ export class RegisterScreen extends Component {
   };
 
   loginUser = () => {
-    this.props.navigation.navigate('DocumentVerifiyScreen');
+    this.props.navigation.navigate('DocumentVerifiyScreen', {
+      mobileNo: this.state.phoneNumberFormatted,
+    });
   };
 
   editPhone = () => {

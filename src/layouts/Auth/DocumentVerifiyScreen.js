@@ -46,6 +46,7 @@ export class DocumentVerifiyScreen extends Component {
       id: '',
       name: '',
       dob: '',
+      errors: [],
     };
   }
 
@@ -113,12 +114,12 @@ export class DocumentVerifiyScreen extends Component {
   };
 
   uploadImage = () => {
-    this.setState({
-      isLoading: false,
-      imageSubmitted: true,
-      progress: 0.33,
-    });
-    return;
+    // this.setState({
+    //   isLoading: false,
+    //   imageSubmitted: true,
+    //   progress: 0.33,
+    // });
+    // return;
     const {selectedImage} = this.state;
     const mobileNo = this.props.route.params.mobileNo;
     let body = [
@@ -214,20 +215,11 @@ export class DocumentVerifiyScreen extends Component {
   };
 
   saveData = () => {
-    this.setState(
-      {
-        progress: 1,
-      },
-      () => {
-        this.props.navigation.navigate('ProfileDetails');
-      },
-    );
-    return;
     const body = {
       farmerName: this.state.documentData.name,
       dateOfBirth: this.state.documentData.dateOfBirth,
       docType: this.state.documentData.idType,
-      documentNumber: this.state.documentData.name,
+      documentNumber: this.state.documentData.idNumber,
       // gender: 'M',
     };
     console.log(body, 'body');

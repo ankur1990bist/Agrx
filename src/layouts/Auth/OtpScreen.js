@@ -21,6 +21,7 @@ import {SEND_OTP, VERIFY_OTP} from '../../config/settings';
 import Spinner from '../../components/SpinnerOverlay';
 import Toast from 'react-native-simple-toast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {CommonActions} from '@react-navigation/native';
 
 export class OtpScreen extends Component {
   constructor(props) {
@@ -34,9 +35,7 @@ export class OtpScreen extends Component {
       isLoading: false,
       showPass: false,
       password: '',
-      confirmPassword: '',
-      showPassConfirm: false,
-      setPassword: false,
+
       phoneNumberFormatted: '',
     };
   }
@@ -191,7 +190,7 @@ export class OtpScreen extends Component {
     });
 
     const body = {
-      mobileNo: this.state.phoneNumber,
+      mobileNo: this.state.phoneNumberFormatted,
       otp: this.state.otp,
     };
 
@@ -204,23 +203,77 @@ export class OtpScreen extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }).then((response) => {
-      console.log(response, 'response');
-      if (response.ok) {
-        this.setState({
-          isLoading: false,
-          setPassword: this.props.route.params.isLoading ? false : true,
-        });
-        this.loginUser();
-      } else {
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response
+            .json()
+            .then((resposeData) => Promise.resolve(resposeData));
+        }
+        return response.json().then((errorData) => Promise.reject(errorData));
+      })
+      .then(
+        (responseJson) => {
+          console.log('json suceess', responseJson);
+          this.setState({
+            isLoading: false,
+          });
+          if (responseJson?.profileDTO?.ocrFlag) {
+            this.props.navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'ProfileStack',
+                    params: {
+                      screen: 'ProfileDetails',
+                      params: {
+                        mobileNo: this.state.phoneNumberFormatted,
+                      },
+                    },
+                  },
+                ],
+              }),
+            );
+          } else {
+            this.props.navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'ProfileStack',
+                    params: {
+                      screen: 'DocumentVerifiyScreen',
+                      params: {
+                        mobileNo: this.state.phoneNumberFormatted,
+                      },
+                    },
+                  },
+                ],
+              }),
+            );
+          }
+        },
+        (errors) => {
+          console.log('errors', errors);
+          let errorsTemp = this.state.errors;
+          errorsTemp['globalError'] = 'Invalid OTP';
+          this.setState({
+            isLoading: false,
+            errors: errorsTemp,
+          });
+        },
+      )
+      .catch((error) => {
+        console.log('error', error);
         let errors = this.state.errors;
         errors['globalError'] = 'Invalid OTP';
         this.setState({
           isLoading: false,
           errors: errors,
         });
-      }
-    });
+      })
+      .done();
   };
 
   loginUser = () => {
@@ -238,17 +291,8 @@ export class OtpScreen extends Component {
 
   render() {
     const {isDark} = this.props.agrxTheme;
-    const {name} = this.props.route.params.userData;
     const {isLogin} = this.props.route.params;
-    const {
-      isLoading,
-      phoneNumber,
-      otp,
-      errors,
-      password,
-      setPassword,
-      confirmPassword,
-    } = this.state;
+    const {isLoading, phoneNumber, otp, errors, password} = this.state;
     return (
       <SafeAreaView style={{flex: 1}}>
         <Spinner visible={isLoading} />
@@ -372,7 +416,7 @@ export class OtpScreen extends Component {
                       <Button
                         mode="contained"
                         style={styles.buttonStyle}
-                        onPress={this.loginUser}>
+                        onPress={this.sendOtp}>
                         <Text
                           style={{
                             fontSize: 18,

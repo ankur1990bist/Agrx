@@ -38,7 +38,7 @@ import IntroSlider from '../layouts/Auth/IntroSlider';
 import LoginScreen from '../layouts/Auth/LoginScreen';
 import OtpScreen from '../layouts/Auth/OtpScreen';
 import DocumentVerifiyScreen from '../layouts/Auth/DocumentVerifiyScreen';
-import ProfileDetails from '../layouts/Auth/ProfileDetails';
+import ProfessionalDetails from '../layouts/Auth/ProfessionalDetails';
 import RegisterScreen from '../layouts/Auth/RegisterScreen';
 import SelectFieldScreen from '../layouts/Auth/SelectFieldScreen';
 
@@ -103,7 +103,7 @@ const customDarkTheme = {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="IntroSlider">
+    <Stack.Navigator initialRouteName="ProfileStack">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}
@@ -129,13 +129,25 @@ function IntroSliderStack() {
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
+        name="ProfileStack"
+        component={ProfileStack}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileStack() {
+  return (
+    <Stack.Navigator initialRouteName="ProfessionalDetails">
+      <Stack.Screen
         name="DocumentVerifiyScreen"
         component={DocumentVerifiyScreen}
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
-        name="ProfileDetails"
-        component={ProfileDetails}
+        name="ProfessionalDetails"
+        component={ProfessionalDetails}
         options={{headerShown: true, headerTitle: ' ', headerBackTitle: ' '}}
       />
       <Stack.Screen
