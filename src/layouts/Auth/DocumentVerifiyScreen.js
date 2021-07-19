@@ -215,6 +215,15 @@ export class DocumentVerifiyScreen extends Component {
   };
 
   saveData = () => {
+    this.setState(
+      {
+        progress: 1,
+      },
+      () => {
+        this.props.navigation.navigate('ProfessionalDetails');
+      },
+    );
+    return;
     const body = {
       farmerName: this.state.documentData.name,
       dateOfBirth: this.state.documentData.dateOfBirth,
@@ -249,7 +258,7 @@ export class DocumentVerifiyScreen extends Component {
           //     progress: 1,
           //   },
           //   () => {
-          //     this.props.navigation.navigate('ProfileDetails');
+          //     this.props.navigation.navigate('ProfessionalDetails');
           //   },
           // );
         },

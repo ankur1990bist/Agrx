@@ -7,14 +7,13 @@ import {
   View,
   BackHandler,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import AgrxColors from '../../config/AgrxColors';
 import * as Animatable from 'react-native-animatable';
 import {connect} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {PROFESSIONAL_DETAILS} from '../../config/settings';
 import ImagePicker from 'react-native-image-picker';
 import _ from 'lodash';
 
@@ -111,7 +110,195 @@ const typeOfService = {
     {id: getId(), title: 'Loan to farmer'},
     {id: getId(), title: 'Storage facility to farmer'},
     {id: getId(), title: 'Transportation to farmer'},
-    {id: 999, title: 'Others'},
+    {id: getId(), isOther: true, title: 'Others'},
+  ],
+};
+
+const buyProductFrom = {
+  questionTitle: 'You buy product from',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Local Shops'},
+    {id: getId(), title: 'Wholesaler Shop'},
+    {id: getId(), title: 'Direct from Farmer'},
+    {id: getId(), title: 'Government Shop'},
+  ],
+};
+
+const buyProductFromLocal = {
+  questionTitle: 'You buy product from',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Farmer'},
+    {id: getId(), title: 'Village Trader or Agent'},
+    {id: getId(), isOther: true, title: 'Others'},
+  ],
+};
+
+const typeOfServiceTransport = {
+  questionTitle: 'You provide services to',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Farmers'},
+    {id: getId(), title: 'Seller'},
+    {id: getId(), title: 'Wholesaler/Retailer'},
+    {id: getId(), title: 'Storage Operator'},
+  ],
+};
+
+const provideStorageTo = {
+  questionTitle: 'You provide storage to',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Farmers'},
+    {id: getId(), title: 'Village Merchants'},
+    {id: getId(), title: 'Commission Agent'},
+    {id: getId(), title: 'Wholesaler'},
+    {id: getId(), title: 'Food Product Industry'},
+    {id: getId(), isOther: true, title: 'Others'},
+  ],
+};
+
+const hiredAs = {
+  questionTitle: 'You are hired as',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Seasonal Worker', child: [payScheme]},
+    {id: getId(), title: 'Fixed Worker', child: [payScheme]},
+  ],
+};
+
+const hireLabour = {
+  questionTitle: 'You hire labour',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Directly'},
+    {id: getId(), title: 'Agent'},
+  ],
+};
+
+const labourHireAs = {
+  questionTitle: 'Labour you hire are',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Local Labour', child: [hireLabour]},
+    {id: getId(), title: 'Migrant Labour', child: [hireLabour]},
+  ],
+};
+
+const paySchemeEmployer = {
+  questionTitle: 'You pays labour on:',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Hourly Basis', child: [labourHireAs]},
+    {id: getId(), title: 'Fixed Pay', child: [labourHireAs]},
+  ],
+};
+
+const labourPaidBy = {
+  questionTitle: 'Labour are paid by',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'You'},
+    {id: getId(), title: 'Farm owners'},
+  ],
+};
+
+const labourHireAsOtherFarm = {
+  questionTitle: 'Labour you hire are',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Local Labour', child: [labourPaidBy]},
+    {id: getId(), title: 'Migrant Labour', child: [labourPaidBy]},
+  ],
+};
+
+const paySchemeOtherFarm = {
+  questionTitle: 'Farm pays labour on:',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Hourly Basis', child: [labourHireAsOtherFarm]},
+    {id: getId(), title: 'Fixed Pay', child: [labourHireAsOtherFarm]},
+  ],
+};
+
+const turnover = {
+  questionTitle: 'What is your turnover?',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Annual Turnover', isTurnover: true},
+    {id: getId(), title: 'Seasonal Turnover', isTurnover: true},
+  ],
+};
+
+const typeOfCrop = {
+  questionTitle: 'Crop that your grow',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Cassava', child: [turnover]},
+    {id: getId(), title: 'Yam', child: [turnover]},
+    {id: getId(), title: 'Plantain', child: [turnover]},
+    {id: getId(), title: 'Palm Oil', child: [turnover]},
+    {id: getId(), title: 'Maize', child: [turnover]},
+    {id: getId(), title: 'Taro', child: [turnover]},
+    {id: getId(), title: 'Cocoa', child: [turnover]},
+    {id: getId(), title: 'Rice', child: [turnover]},
+    {id: getId(), title: 'Peanut', child: [turnover]},
+    {id: getId(), title: 'Natural Rubber', child: [turnover]},
+    {
+      id: getId(),
+      title: 'Others',
+      isOther: true,
+      isOtherCrop: true,
+      child: [turnover],
+    },
+  ],
+};
+
+const waterAvailibility = {
+  questionTitle: 'Availability of water for farming',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Rainfed water', child: [typeOfCrop]},
+    {id: getId(), title: 'Irrigated Farming', child: [typeOfCrop]},
+  ],
+};
+
+const farmingPattern = {
+  questionTitle: 'Your farming pattern',
+  id: getId(),
+  child: [
+    {
+      id: getId(),
+      title: 'Mono Cropping',
+      child: [waterAvailibility],
+      description: 'Only one crop is grown on farm land year after year',
+    },
+    {
+      id: getId(),
+      title: 'Multiple Cropping',
+      child: [waterAvailibility],
+      description:
+        'Farmers grow tow or more crops on farm land in one calendar year',
+    },
+    {
+      id: getId(),
+      title: 'Inter Cropping',
+      child: [waterAvailibility],
+      description:
+        'Farmers grow two or more crops simultaneously on the same field in one calendar year',
+    },
+  ],
+};
+
+const landOnLease = {
+  questionTitle: 'If land on lease',
+  id: getId(),
+  child: [
+    {id: getId(), title: 'Written Contract', child: [farmingPattern]},
+    {id: getId(), title: 'Enforceable Lease', child: [farmingPattern]},
+    {id: getId(), title: 'Cash Lease', child: [farmingPattern]},
+    {id: getId(), title: 'Crop share lease', child: [farmingPattern]},
   ],
 };
 
@@ -119,7 +306,55 @@ const jsonData = {
   questionTitle: 'Choose your category',
   id: getId(),
   child: [
-    {id: 0, title: 'Producer / Grower'},
+    {
+      id: 0,
+      title: 'Producer / Grower',
+      child: [
+        {
+          questionTitle: 'Type of Farmers',
+          id: getId(),
+          child: [
+            {
+              id: getId(),
+              title: 'Marginal Farmers',
+              description: 'Farmers who have less than 1 hectare of land',
+              child: [landOnLease],
+            },
+            {
+              id: getId(),
+              title: 'Small Farmers',
+              description: 'Farmers who have less than 1 to 2 hectare of land',
+              child: [landOnLease],
+            },
+            {
+              id: getId(),
+              title: 'Semi Medium Farmers',
+              description: 'Farmers who have less than 2 to 4 hectare of land',
+              child: [landOnLease],
+            },
+            {
+              id: getId(),
+              title: 'Medium Farmers',
+              description: 'Farmers who have less than 4 to 10 hectare of land',
+              child: [landOnLease],
+            },
+            {
+              id: getId(),
+              title: 'Large Farmers',
+              description:
+                'Farmers who have less than 10 hectare or above of land',
+              child: [landOnLease],
+            },
+            {
+              id: getId(),
+              title: `Doesn't own Land`,
+              description: 'Farmers who does farming on others land',
+              child: [landOnLease],
+            },
+          ],
+        },
+      ],
+    },
     {
       id: 1,
       title: 'Non Farmer',
@@ -223,7 +458,7 @@ const jsonData = {
                             {
                               id: getId(),
                               title: 'Other types of orchard',
-                              otherType: true,
+                              isOther: true,
                             },
                           ],
                         },
@@ -305,7 +540,7 @@ const jsonData = {
                 },
               ],
             },
-            {id: 999, title: 'Others'},
+            {id: getId(), isOther: true, title: 'Others'},
           ],
         },
       ],
@@ -422,17 +657,350 @@ const jsonData = {
                 },
               ],
             },
-            {id: 999, title: 'Others'},
+            {id: getId(), isOther: true, title: 'Others'},
           ],
         },
       ],
     },
-    {id: 3, title: 'Customer / Buyer'},
-    {id: 4, title: 'Support Community'},
+    {
+      id: 3,
+      title: 'Customer / Buyer',
+      child: [
+        {
+          questionTitle: 'You are a:',
+          id: getId(),
+          child: [
+            {
+              id: getId(),
+              title: 'Individual Buyer',
+              child: [
+                {
+                  questionTitle: 'You are buyer of which agriculture product?',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Food Products',
+                      child: [buyProductFrom],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fuel Products',
+                      child: [buyProductFrom],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fibre Products',
+                      child: [buyProductFrom],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Raw Material Products',
+                      child: [buyProductFrom],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'Local Buyer',
+              child: [
+                {
+                  questionTitle: 'You are buyer of which agriculture product?',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Food Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fuel Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fibre Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Raw Material Products',
+                      child: [buyProductFromLocal],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'National Buyer',
+              child: [
+                {
+                  questionTitle: 'You are buyer of which agriculture product?',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Food Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fuel Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fibre Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Raw Material Products',
+                      child: [buyProductFromLocal],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'International Buyer',
+              child: [
+                {
+                  questionTitle: 'You are buyer of which agriculture product?',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Food Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fuel Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Fibre Products',
+                      child: [buyProductFromLocal],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Raw Material Products',
+                      child: [buyProductFromLocal],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: 'Support Community',
+      child: [
+        {
+          questionTitle: 'You are a:',
+          id: getId(),
+          child: [
+            {
+              id: getId(),
+              title: 'Transport Operator',
+              child: [
+                {
+                  questionTitle: 'What all transport means do you have?',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Railway',
+                      child: [typeOfServiceTransport],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Roadways',
+                      child: [typeOfServiceTransport],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Airway',
+                      child: [typeOfServiceTransport],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Logistic Shipping',
+                      child: [typeOfServiceTransport],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'Storage Operator',
+              child: [
+                {
+                  id: getId(),
+                  questionTitle: 'What forms of storage do you have?',
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Open storage systems',
+                      child: [provideStorageTo],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Semi-open storage systems',
+                      child: [provideStorageTo],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Closed storage systems',
+                      child: [provideStorageTo],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Cold storage systems',
+                      child: [provideStorageTo],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'Weighman',
+              child: [
+                {
+                  questionTitle: 'You provide services to',
+                  id: getId(),
+                  child: [
+                    {id: getId(), title: 'Farmers', child: [payScheme]},
+                    {
+                      id: getId(),
+                      title: 'Village Merchants',
+                      child: [payScheme],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Commission Agent',
+                      child: [payScheme],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Storage Operators',
+                      child: [payScheme],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Wholesaler Retailer',
+                      child: [payScheme],
+                    },
+                    {id: getId(), isOther: true, title: 'Others'},
+                  ],
+                },
+              ],
+            },
+            {id: getId(), isOther: true, title: 'Others'},
+          ],
+        },
+      ],
+    },
     {id: 5, title: 'Monitoring Community'},
-    {id: 6, title: 'Labour & Employment'},
+    {
+      id: 6,
+      title: 'Labour & Employment',
+      child: [
+        {
+          id: getId(),
+          questionTitle: 'You are a',
+          child: [
+            {
+              id: getId(),
+              title: 'Labourer',
+              child: [
+                {
+                  questionTitle: 'You are hired by',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Grower or Producer',
+                      child: [hiredAs],
+                    },
+                    {id: getId(), title: 'Labour Contractor', child: [hiredAs]},
+                  ],
+                },
+              ],
+            },
+            {
+              id: getId(),
+              title: 'Employer',
+              child: [
+                {
+                  questionTitle: 'You hire labour for',
+                  id: getId(),
+                  child: [
+                    {
+                      id: getId(),
+                      title: 'Own Farm',
+                      child: [
+                        {
+                          questionTitle: 'You hire labour on',
+                          child: [
+                            {
+                              id: getId(),
+                              title: 'Seasonal',
+                              child: [paySchemeEmployer],
+                            },
+                            {
+                              id: getId(),
+                              title: 'Permanent',
+                              child: [paySchemeEmployer],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      id: getId(),
+                      title: 'Other Farm',
+                      child: [
+                        {
+                          questionTitle: 'Farms hire labour on',
+                          id: getId(),
+                          child: [
+                            {
+                              id: getId(),
+                              title: 'Seasonal',
+                              child: [paySchemeOtherFarm],
+                            },
+                            {
+                              id: getId(),
+                              title: 'Permanent',
+                              child: [paySchemeOtherFarm],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
     {id: 7, title: 'Finance'},
-    {id: 999, title: 'Others'},
+    {id: getId(), isOther: true, title: 'Others'},
   ],
 };
 
@@ -447,6 +1015,11 @@ let initialState = {
   selectedOption: null,
   selectedImage: [],
   pressed: false,
+  showTurnover: false,
+  showOtherCrop: false,
+  turnover: '',
+  otherCrop: '',
+  otherCropData: {},
 };
 
 export class ProfessionalDetails extends Component {
@@ -481,12 +1054,15 @@ export class ProfessionalDetails extends Component {
           </TouchableOpacity>
         );
       },
+      headerLeft: () => null,
     });
   }
 
   resetData = () => {
     this.setState({
       workData: jsonData,
+      showTurnover: false,
+      showOtherCrop: false,
     });
   };
 
@@ -501,14 +1077,43 @@ export class ProfessionalDetails extends Component {
     return true;
   };
 
+  onChangeTurnover = (text) => {
+    this.setState({
+      turnover: text,
+    });
+  };
+
+  onChangeOtherCrop = (text) => {
+    this.setState({
+      otherCrop: text,
+    });
+  };
+
   onChangeText = (text) => {
     this.setState({
       categoryText: text,
     });
   };
 
-  getData = (id) => {
+  setOtherCrop = () => {};
+
+  getData = (id, isOther, isTurnover, isOtherCrop) => {
     // jsonData[id]
+    if (isTurnover) {
+      this.setState({
+        showOtherCrop: false,
+        showTurnover: true,
+      });
+      return;
+    }
+    if (isOther) {
+      if (isOtherCrop) {
+        this.setState({showOtherCrop: true});
+        return;
+      }
+      this.setState({showOther: true, showSubmit: true});
+      return;
+    }
     if (this.state.workData?.child?.length > 0) {
       let temp = _.find(this.state.workData.child, {id});
 
@@ -517,98 +1122,71 @@ export class ProfessionalDetails extends Component {
       if (temp?.child?.length > 0) {
         this.setState({
           workData: temp.child[0],
+          showSubmit: false,
+          showTurnover: false,
+          showOtherCrop: false,
         });
       } else {
         this.setState({
           showSubmit: true,
+          showTurnover: false,
+          showOtherCrop: false,
         });
       }
     } else {
       this.setState({
         showSubmit: true,
+        showTurnover: false,
+        showOtherCrop: false,
       });
     }
-
-    return;
-    let url = PROFESSIONAL_DETAILS;
-
-    if (id) {
-      url = url + id;
-    } else {
-      url = url + 1;
-    }
-    console.log(url, 'urlurl');
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        // 'x-api-key': 'bf7fe978-c0f1-11eb-8089-0200cd936042',
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response
-            .json()
-            .then((resposeData) => Promise.resolve(resposeData));
-        }
-        return response.json().then((errorData) => Promise.reject(errorData));
-      })
-      .then(
-        (responseJson) => {
-          console.log('json suceess', responseJson);
-          if (responseJson.options == null) {
-            this.setState({
-              showSubmit: true,
-            });
-            return;
-          }
-          if (
-            responseJson.options.length == 1 &&
-            responseJson.options[0].id > 2
-          ) {
-            this.getData(responseJson.options[0].id);
-            return;
-          }
-          this.setState({
-            workData: responseJson,
-          });
-        },
-        (errors) => {
-          console.log('errors', errors);
-        },
-      )
-      .catch((error) => {
-        console.log('error', error);
-      })
-      .done();
   };
 
   renderOptions = ({item, index}) => {
     return (
       <TouchableOpacity
-        onPress={() => {
-          this.setState({
-            selectedData: [...this.state.selectedData, item],
-            selectedOption: item.id,
-          });
-          this.getData(item.id);
-        }}
         style={{
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor:
-            this.state.selectedOption == item.id
-              ? AgrxColors.primary
-              : 'transparent',
-          borderRadius: 5,
+            this.state.selectedOption == item.id ? AgrxColors.primary : '#fff',
+          borderRadius: 8,
 
-          borderWidth: 0.4,
-          borderColor: AgrxColors.borderBottomColor,
+          // borderWidth: 0.5,
+          // borderColor: AgrxColors.igesiaGray,
           width: '45%',
           marginHorizontal: 5,
           alignSelf: 'center',
-          marginTop: 8,
+          marginVertical: 5,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 3,
+        }}
+        activeOpacity={0.4}
+        onPress={() => {
+          this.setState({
+            selectedData: [...this.state.selectedData, item],
+            selectedOption: item.id,
+            otherCropData: item.isOtherCrop
+              ? {
+                  id: item.id,
+                  isOther: item.isOther,
+                  isTurnover: item.isTurnover,
+                  isOtherCrop: item.isOtherCrop,
+                }
+              : {},
+          });
+          this.getData(
+            item.id,
+            item.isOther,
+            item.isTurnover,
+            item.isOtherCrop,
+          );
         }}>
         <Text
           style={{
@@ -616,9 +1194,28 @@ export class ProfessionalDetails extends Component {
             padding: 12,
             color: this.state.selectedOption == item.id ? '#fff' : '#000',
             textAlign: 'center',
+            fontWeight:
+              this.state.selectedOption == item.id ? 'bold' : 'normal',
           }}>
           {item.title}
         </Text>
+
+        {item.description && (
+          <Text
+            style={{
+              fontSize: 14,
+              paddingHorizontal: 12,
+              paddingBottom: 8,
+              fontStyle: 'italic',
+              color:
+                this.state.selectedOption == item.id
+                  ? '#fff'
+                  : AgrxColors.igesiaGray,
+              textAlign: 'center',
+            }}>
+            {item.description}
+          </Text>
+        )}
       </TouchableOpacity>
     );
   };
@@ -728,137 +1325,302 @@ export class ProfessionalDetails extends Component {
   render() {
     const {isDark} = this.props.agrxTheme;
 
-    console.log(this.state.selectedData, 'selectedData');
-    console.log(this.state.selectedImage, 'this.state.selectedImage.');
     return (
       <SafeAreaView style={{flex: 1}}>
-        <View style={{marginTop: 20, paddingHorizontal: 12, marginBottom: 5}}>
-          <Text style={{fontSize: 32, color: '#009688', fontWeight: 'bold'}}>
-            Almost there!
-          </Text>
-          <Text style={{fontSize: 16, color: '#6c757d', marginTop: 5}}>
-            We need little more information to serve you better
-          </Text>
-        </View>
-
-        {this.state.showOther ? (
-          <View>
-            <TextInput
-              mode="flat"
-              placeholder="Kindly mention the category of your work"
-              onChangeText={this.onChangeCategory}
-              style={{
-                width: '90%',
-                backgroundColor: '#fff',
-                alignSelf: 'center',
-                marginTop: 8,
-              }}
-              underlineColor="transparent"
-              underlineColorAndroid="transparent"
-            />
-
-            <TextInput
-              mode="flat"
-              placeholder="Describe your work in 40-250 words"
-              onChangeText={this.onChangeCategoryDescription}
-              style={{
-                width: '90%',
-                backgroundColor: '#fff',
-                alignSelf: 'center',
-                marginTop: 8,
-              }}
-              numberOfLines={5}
-              multiline={true}
-              underlineColor="transparent"
-              underlineColorAndroid="transparent"
-            />
-          </View>
-        ) : (
-          <View style={{paddingHorizontal: 8}}>
-            <Text
-              style={{
-                fontSize: 26,
-                color: '#000',
-                marginTop: 12,
-                fontWeight: 'bold',
-              }}>
-              {this.state.workData.questionTitle}
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          contentContainerStyle={{flexGrow: 1}}>
+          <View style={{marginTop: 20, paddingHorizontal: 12, marginBottom: 5}}>
+            <Text style={{fontSize: 32, color: '#009688', fontWeight: 'bold'}}>
+              Almost there!
             </Text>
-            <FlatList
-              style={{marginTop: 8}}
-              numColumns={2}
-              data={this.state.workData.child}
-              renderItem={this.renderOptions}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
-        )}
-        {this.state.showSubmit && (
-          <Animatable.View
-            style={{paddingHorizontal: 8, marginTop: 12}}
-            animation="slideInRight"
-            useNativeDriver={true}>
-            <Text
-              style={{
-                color: AgrxColors.igesiaGray,
-                fontSize: 14,
-                padding: 5,
-              }}>
-              Please upload your business documents/GST/Aadhar Udyog/Shop
-              License/Memorandum/Contract/Lease Agreement/any government issued
-              document for business.
+            <Text style={{fontSize: 16, color: '#6c757d', marginTop: 5}}>
+              We need little more information to serve you better
             </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 8,
-              }}>
-              <Button
-                icon="note-plus"
-                mode="contained"
-                style={{
-                  borderRadius: 5,
+          </View>
 
-                  alignSelf: 'center',
-                }}
-                labelStyle={{color: '#fff'}}
-                onPress={this.imageTapped}>
-                Upload Documents
-              </Button>
-              <Button
-                mode="contained"
+          {this.state.showOther ? (
+            <View style={{flex: 1}}>
+              <TextInput
+                mode="flat"
+                placeholder="Kindly mention the category of your work"
+                onChangeText={this.onChangeCategory}
                 style={{
-                  borderRadius: 5,
-                  width: 120,
+                  width: '90%',
+                  backgroundColor: '#fff',
                   alignSelf: 'center',
+                  marginTop: 8,
                 }}
-                labelStyle={{color: '#fff'}}
-                onPress={() => {
-                  this.props.navigation.navigate('SelectFieldScreen');
-                }}>
-                Next
-              </Button>
+                underlineColor="transparent"
+                underlineColorAndroid="transparent"
+              />
+
+              <TextInput
+                mode="flat"
+                placeholder="Describe your work in 40-250 words"
+                onChangeText={this.onChangeCategoryDescription}
+                style={{
+                  width: '90%',
+                  backgroundColor: '#fff',
+                  alignSelf: 'center',
+                  marginTop: 8,
+                }}
+                numberOfLines={5}
+                multiline={true}
+                underlineColor="transparent"
+                underlineColorAndroid="transparent"
+              />
+              <View style={{flex: 1, paddingHorizontal: 12}}>
+                {this.state.showSubmit && (
+                  <FlatList
+                    ListHeaderComponent={() => {
+                      return (
+                        <View>
+                          <Text
+                            style={{
+                              color: AgrxColors.igesiaGray,
+                              fontSize: 14,
+                              padding: 5,
+                            }}>
+                            Please upload your business documents/GST/Aadhar
+                            Udyog/Shop License/Memorandum/Contract/Lease
+                            Agreement/any government issued document for
+                            business.
+                          </Text>
+                        </View>
+                      );
+                    }}
+                    style={{marginVertical: 8, flex: 1}}
+                    data={this.state.selectedImage}
+                    renderItem={this.renderSelectedDoc}
+                    keyExtractor={(item) => item.path}
+                    ListFooterComponent={() => {
+                      return (
+                        <View>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              marginTop: 8,
+                            }}>
+                            <Button
+                              icon="note-plus"
+                              mode="contained"
+                              style={{
+                                borderRadius: 5,
+
+                                alignSelf: 'center',
+                              }}
+                              labelStyle={{color: '#fff'}}
+                              onPress={this.imageTapped}>
+                              Upload Documents
+                            </Button>
+                            <Button
+                              mode="contained"
+                              style={{
+                                borderRadius: 5,
+                                width: 120,
+                                alignSelf: 'center',
+                              }}
+                              labelStyle={{color: '#fff'}}
+                              onPress={() => {
+                                this.props.navigation.navigate(
+                                  'SelectFieldScreen',
+                                );
+                              }}>
+                              Next
+                            </Button>
+                          </View>
+
+                          <Text
+                            style={{
+                              color: AgrxColors.igesiaGray,
+                              fontSize: 14,
+                              padding: 5,
+                              marginTop: 5,
+                            }}>
+                            (Maximum 5 documents can be added)
+                          </Text>
+                        </View>
+                      );
+                    }}
+                  />
+                )}
+              </View>
             </View>
-            <FlatList
-              style={{marginTop: 8, maxHeight: 100}}
-              data={this.state.selectedImage}
-              renderItem={this.renderSelectedDoc}
-              keyExtractor={(item) => item.path}
-            />
+          ) : (
+            <View style={{paddingHorizontal: 8}}>
+              <Text
+                style={{
+                  fontSize: 26,
+                  color: '#000',
+                  marginTop: 12,
+                  fontWeight: 'bold',
+                }}>
+                {this.state.workData.questionTitle}
+              </Text>
+              <FlatList
+                style={{marginTop: 8}}
+                numColumns={2}
+                data={this.state.workData.child}
+                renderItem={this.renderOptions}
+                keyExtractor={(item) => item.id}
+                ListFooterComponent={() => {
+                  return (
+                    <View>
+                      {this.state.showSubmit && (
+                        <FlatList
+                          ListHeaderComponent={() => {
+                            return (
+                              <Text
+                                style={{
+                                  color: AgrxColors.igesiaGray,
+                                  fontSize: 14,
+                                  padding: 5,
+                                }}>
+                                Please upload your business documents/GST/Aadhar
+                                Udyog/Shop License/Memorandum/Contract/Lease
+                                Agreement/any government issued document for
+                                business.
+                              </Text>
+                            );
+                          }}
+                          style={{marginVertical: 8, flex: 1}}
+                          data={this.state.selectedImage}
+                          renderItem={this.renderSelectedDoc}
+                          keyExtractor={(item) => item.path}
+                          ListFooterComponent={() => {
+                            return (
+                              <View>
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    marginTop: 8,
+                                  }}>
+                                  <Button
+                                    icon="note-plus"
+                                    mode="contained"
+                                    style={{
+                                      borderRadius: 5,
 
-            <Text
-              style={{
-                color: AgrxColors.igesiaGray,
-                fontSize: 14,
-                padding: 5,
-                marginTop: 5,
-              }}>
-              (Maximum 5 documents can be added)
-            </Text>
-          </Animatable.View>
-        )}
+                                      alignSelf: 'center',
+                                    }}
+                                    labelStyle={{color: '#fff'}}
+                                    onPress={this.imageTapped}>
+                                    Upload Documents
+                                  </Button>
+                                  <Button
+                                    mode="contained"
+                                    style={{
+                                      borderRadius: 5,
+                                      width: 120,
+                                      alignSelf: 'center',
+                                    }}
+                                    labelStyle={{color: '#fff'}}
+                                    onPress={() => {
+                                      this.props.navigation.navigate(
+                                        'SelectFieldScreen',
+                                      );
+                                    }}>
+                                    Next
+                                  </Button>
+                                </View>
+                                <Text
+                                  style={{
+                                    color: AgrxColors.igesiaGray,
+                                    fontSize: 14,
+                                    padding: 5,
+                                    marginTop: 5,
+                                  }}>
+                                  (Maximum 5 documents can be added)
+                                </Text>
+                              </View>
+                            );
+                          }}
+                        />
+                      )}
+                    </View>
+                  );
+                }}
+              />
+              <View style={{flex: 1}}>
+                {this.state.showOtherCrop && (
+                  <View
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <TextInput
+                      mode="flat"
+                      placeholder="Kindly mention the crop name"
+                      onChangeText={this.onChangeOtherCrop}
+                      style={{
+                        width: '90%',
+                        backgroundColor: '#fff',
+                        alignSelf: 'center',
+                        marginTop: 8,
+                      }}
+                      underlineColor="transparent"
+                      underlineColorAndroid="transparent"
+                    />
+
+                    <Button
+                      mode="contained"
+                      style={{
+                        borderRadius: 5,
+                        marginTop: 5,
+                        alignSelf: 'center',
+                        width: '90%',
+                        alignSelf: 'center',
+                      }}
+                      labelStyle={{color: '#fff'}}
+                      onPress={() => {
+                        this.getData(this.state.otherCropData.id);
+                      }}>
+                      Next
+                    </Button>
+                  </View>
+                )}
+
+                {this.state.showTurnover && (
+                  <View
+                    style={{alignItems: 'center', justifyContent: 'center'}}>
+                    <TextInput
+                      mode="flat"
+                      placeholder="Please mention your turnover amount."
+                      onChangeText={this.onChangeTurnover}
+                      keyboardType={'number-pad'}
+                      style={{
+                        width: '90%',
+                        backgroundColor: '#fff',
+                        alignSelf: 'center',
+                        marginTop: 8,
+                      }}
+                      underlineColor="transparent"
+                      underlineColorAndroid="transparent"
+                    />
+
+                    <Button
+                      mode="contained"
+                      style={{
+                        borderRadius: 5,
+                        marginTop: 5,
+                        alignSelf: 'center',
+                        width: '90%',
+                        alignSelf: 'center',
+                      }}
+                      labelStyle={{color: '#fff'}}
+                      onPress={() => {
+                        this.getData(this.state.otherCropData.id);
+                      }}>
+                      Next
+                    </Button>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+        </ScrollView>
       </SafeAreaView>
     );
   }

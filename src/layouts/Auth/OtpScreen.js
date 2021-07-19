@@ -226,7 +226,7 @@ export class OtpScreen extends Component {
                   {
                     name: 'ProfileStack',
                     params: {
-                      screen: 'ProfileDetails',
+                      screen: 'ProfessionalDetails',
                       params: {
                         mobileNo: this.state.phoneNumberFormatted,
                       },

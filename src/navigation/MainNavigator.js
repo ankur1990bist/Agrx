@@ -103,7 +103,7 @@ const customDarkTheme = {
 
 function IntroSliderStack() {
   return (
-    <Stack.Navigator initialRouteName="ProfileStack">
+    <Stack.Navigator initialRouteName="IntroSlider">
       <Stack.Screen
         name="IntroSlider"
         component={IntroSlider}
@@ -139,7 +139,7 @@ function IntroSliderStack() {
 
 function ProfileStack() {
   return (
-    <Stack.Navigator initialRouteName="ProfessionalDetails">
+    <Stack.Navigator initialRouteName="DocumentVerifiyScreen">
       <Stack.Screen
         name="DocumentVerifiyScreen"
         component={DocumentVerifiyScreen}

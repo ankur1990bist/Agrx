@@ -19,6 +19,7 @@ import {SAVE_USER_DATA, SEND_OTP, VERIFY_OTP} from '../../config/settings';
 import Spinner from '../../components/SpinnerOverlay';
 import Toast from 'react-native-simple-toast';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {CommonActions} from '@react-navigation/native';
 
 export class RegisterScreen extends Component {
   constructor(props) {
@@ -240,6 +241,8 @@ export class RegisterScreen extends Component {
   };
 
   createAccount = () => {
+    this.loginUser();
+    return;
     if (this.state.password.length <= 6) {
       let errors = this.state.errors;
       errors['globalError'] = 'Password should be of atleast 6 characters.';
@@ -296,9 +299,22 @@ export class RegisterScreen extends Component {
   };
 
   loginUser = () => {
-    this.props.navigation.navigate('DocumentVerifiyScreen', {
-      mobileNo: this.state.phoneNumberFormatted,
-    });
+    this.props.navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'ProfileStack',
+            params: {
+              screen: 'DocumentVerifiyScreen',
+              params: {
+                mobileNo: this.state.phoneNumberFormatted,
+              },
+            },
+          },
+        ],
+      }),
+    );
   };
 
   editPhone = () => {
